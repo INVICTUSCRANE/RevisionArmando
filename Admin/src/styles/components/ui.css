@@ -1,0 +1,180 @@
+/* Piezas de interfaz reutilizables: botones, campos, buscador, filtros, etiquetas, cuadros de diálogo y avisos. */
+@layer components {
+    /* ---------- Botones ---------- */
+    .btn {
+        @apply relative inline-flex h-11 shrink-0 items-center justify-center gap-2 overflow-hidden rounded-xl px-5 font-display text-[17px]
+            font-semibold tracking-wide whitespace-nowrap transition duration-300 select-none
+            disabled:pointer-events-none disabled:opacity-45;
+    }
+    .btn svg { @apply size-[18px] shrink-0; }
+    .btn-sm { @apply h-9 gap-1.5 rounded-lg px-3.5 text-[15px]; }
+    .btn-sm svg { @apply size-4; }
+
+    .btn-primary {
+        @apply bg-brand-600 text-white shadow-lg shadow-brand-700/25 hover:-translate-y-0.5 hover:bg-brand-500 hover:shadow-xl
+            hover:shadow-brand-500/30 active:translate-y-0;
+    }
+    /* Brillo que cruza el botón al pasar el cursor (igual que en el inicio de sesión) */
+    .btn-primary::after, .btn-danger::after {
+        content: "";
+        @apply pointer-events-none absolute inset-y-0 -left-full w-1/2 -skew-x-12 bg-white/25 transition-[left] duration-700 ease-out;
+    }
+    .btn-primary:hover::after, .btn-danger:hover::after { left: 150%; }
+
+    .btn-ghost {
+        @apply border border-ink-200 bg-white text-ink-700 hover:border-brand-400 hover:text-brand-700
+            dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200 dark:hover:border-neon/50 dark:hover:text-neon;
+    }
+    .btn-ghost.is-danger { @apply hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-400/50 dark:hover:bg-red-500/10 dark:hover:text-red-300; }
+    .btn-ghost:hover svg { animation: var(--animate-pop); }
+    .btn-danger { @apply bg-red-600 text-white shadow-lg shadow-red-700/25 hover:-translate-y-0.5 hover:bg-red-500; }
+
+    .icon-btn {
+        @apply grid size-10 shrink-0 place-items-center rounded-xl text-ink-500 transition hover:bg-ink-100 hover:text-ink-900
+            dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-white;
+    }
+
+    .spinner { @apply size-[18px] animate-spin rounded-full border-2 border-white/30 border-t-white; }
+
+    /* ---------- Campos ---------- */
+    .field-label { @apply mb-2 block font-display text-[15px] font-semibold uppercase tracking-[0.12em] text-ink-700 dark:text-ink-300; }
+    .field-label small { @apply ml-1 font-sans text-xs font-normal tracking-normal normal-case text-ink-500; }
+    .input, .select, .textarea {
+        @apply w-full rounded-xl border border-ink-200 bg-white px-4 text-[15px] text-ink-900 transition duration-200
+            placeholder:text-ink-400 hover:border-ink-300 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15
+            dark:border-ink-700 dark:bg-ink-900 dark:text-white dark:placeholder:text-ink-500 dark:hover:border-ink-600
+            dark:focus:border-neon/70 dark:focus:ring-neon/10;
+    }
+    .input, .select { @apply h-12; }
+    .textarea { @apply min-h-28 resize-y py-3 leading-relaxed; }
+    .select {
+        @apply cursor-pointer appearance-none bg-no-repeat pr-11;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23857f7f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-position: right 1rem center;
+        background-size: 1.1rem;
+    }
+    .input[aria-invalid="true"], .select[aria-invalid="true"], .textarea[aria-invalid="true"] { @apply border-red-400 ring-4 ring-red-400/15 dark:border-red-400; }
+    .field-hint { @apply mt-2 text-sm text-ink-500 dark:text-ink-400; }
+    .field-error { @apply mt-2 flex items-center gap-1.5 text-sm font-medium text-red-600 dark:text-red-300; animation: var(--animate-enter); }
+    .counter { @apply mt-1.5 text-right text-xs text-ink-400 tabular-nums; }
+
+    /* Buscador */
+    .search { @apply relative min-w-0 flex-1; }
+    .search svg { @apply pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-ink-400 transition-colors; }
+    .search:focus-within svg { @apply text-brand-500 dark:text-neon; }
+    .search .input { @apply pl-11; }
+    /* La X nativa del buscador, en el color del panel */
+    .search input[type="search"]::-webkit-search-cancel-button { @apply cursor-pointer opacity-60 hover:opacity-100; }
+
+    /* Fila de buscador + filtros: apilada en angosto, en renglón cuando su tarjeta tiene espacio */
+    .filters { @apply flex flex-col gap-3; }
+    @container (width >= 40rem) {
+        .filters { @apply flex-row; }
+        .filters > .select { @apply w-52 shrink-0; }
+        .filters > .select.is-wide { @apply w-64; }
+    }
+    /* Buscador con dos filtros en espacio mediano (tableta): el buscador arriba y los filtros en dos columnas */
+    @container (40rem <= width < 56rem) {
+        .filters:has(> :nth-child(3)) { @apply grid grid-cols-2; }
+        .filters:has(> :nth-child(3)) > .search { @apply col-span-2; }
+        .filters:has(> :nth-child(3)) > .select { @apply w-auto; }
+    }
+
+    /* Filtros tipo píldora */
+    .chip {
+        @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-ink-200 bg-white px-4 text-sm font-medium text-ink-600 transition
+            hover:-translate-y-px hover:border-brand-400 hover:text-brand-700
+            dark:border-ink-700 dark:bg-ink-900 dark:text-ink-300 dark:hover:border-neon/50 dark:hover:text-neon;
+    }
+    .chip[aria-pressed="true"] { @apply border-brand-600 bg-brand-600 text-white shadow-md shadow-brand-600/25 dark:border-neon/70 dark:bg-neon/15 dark:text-neon; }
+    .dark .chip[aria-pressed="true"] { box-shadow: 0 0 14px -3px rgb(61 255 180 / .6); }
+    .chip .chip-count { @apply rounded-full bg-black/10 px-1.5 text-xs tabular-nums dark:bg-white/10; }
+
+    /* Etiquetas */
+    .tag { @apply inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-sm text-brand-700 dark:bg-neon/10 dark:text-brand-100 dark:ring-1 dark:ring-neon/20; }
+    .tag-muted { @apply inline-flex items-center gap-1.5 rounded-full bg-ink-100 px-2.5 py-1 text-xs font-medium whitespace-nowrap text-ink-600 dark:bg-white/[.06] dark:text-ink-300; }
+    .tag-muted .dot { @apply size-1.5 rounded-full bg-ink-400; }
+    .tag-muted.is-linked .dot { @apply bg-brand-500 dark:bg-neon dark:shadow-[0_0_6px] dark:shadow-neon; }
+    .tag button { @apply -mr-1 grid size-5 place-items-center rounded-md text-brand-600 transition hover:bg-brand-600 hover:text-white dark:text-neon dark:hover:bg-neon dark:hover:text-ink-950; }
+
+    /* ---------- Cuadros de diálogo ---------- */
+    /* Sin desenfoque: oscurecer el fondo basta y la apertura es fluida también en celular */
+    .modal-backdrop { @apply fixed inset-0 z-50 bg-ink-950/65; animation: backdrop-in .3s ease-out both; }
+    .modal-wrap { @apply fixed inset-0 z-50 flex items-end justify-center overflow-y-auto p-0 sm:items-center sm:p-6; }
+    .modal {
+        @apply relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_40px_90px_-30px_rgb(0_0_0/.55)]
+            sm:max-h-[min(52rem,calc(100dvh-3rem))] sm:rounded-3xl dark:bg-ink-900 dark:ring-1 dark:ring-neon/15;
+        animation: modal-in .55s var(--ease-spring) both;
+    }
+    .dark .modal { box-shadow: 0 40px 90px -30px rgb(0 0 0 / .9), 0 0 60px -12px rgb(42 143 113 / .45); }
+    .modal-head { @apply flex items-center gap-4 border-b border-ink-100 px-6 py-5 sm:px-7 dark:border-white/[.06]; }
+    .modal-body { @apply flex-1 space-y-5 overflow-y-auto px-6 py-6 sm:px-7; }
+    .modal-foot { @apply flex flex-wrap items-center justify-end gap-3 border-t border-ink-100 px-6 py-4 sm:px-7 dark:border-white/[.06]; padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+    /* En celular el cuadro sale desde abajo y sus botones ocupan el ancho (más fáciles de tocar) */
+    @media (width < 40rem) {
+        .modal-foot > .btn { @apply flex-1; }
+        .modal-head { @apply px-5 py-4; }
+        .modal-body { @apply px-5 py-5; }
+        .modal::before { content: ""; @apply absolute top-2 left-1/2 z-[1] h-1 w-10 -translate-x-1/2 rounded-full bg-ink-200; }
+        .dark .modal::before { background-color: rgb(255 255 255 / .15); }
+    }
+    .modal-close:hover svg { @apply rotate-90; }
+    .modal-close svg { @apply transition-transform duration-300; }
+    .modal.is-leaving { animation: modal-out .22s ease-in both; }
+    .modal-backdrop.is-leaving { animation: backdrop-out .25s ease-in both; }
+
+    /* ---------- Zona para subir imagen ---------- */
+    .dropzone {
+        @apply relative grid aspect-[16/7] w-full place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-ink-200 bg-ink-50
+            text-center transition duration-300 hover:border-brand-400 hover:bg-brand-50/60
+            dark:border-ink-700 dark:bg-ink-950/60 dark:hover:border-neon/50 dark:hover:bg-neon/[.03];
+    }
+    .dropzone:has(input:focus-visible) { @apply ring-4 ring-brand-400/40; }
+    .dropzone.is-over { @apply scale-[1.01] border-brand-500 bg-brand-50 dark:border-neon dark:bg-neon/[.06]; }
+    .dark .dropzone.is-over { box-shadow: 0 0 0 4px rgb(61 255 180 / .1), 0 0 30px -6px rgb(61 255 180 / .6); }
+    .dropzone .drop-icon { @apply mx-auto mb-3 grid size-12 place-items-center rounded-2xl bg-white text-brand-600 shadow-sm ring-1 ring-ink-200 transition duration-300 dark:bg-ink-900 dark:text-neon dark:ring-neon/30; }
+    .dropzone:hover .drop-icon, .dropzone.is-over .drop-icon { @apply -translate-y-1; }
+    .dropzone img { @apply absolute inset-0 size-full object-cover; animation: var(--animate-enter); }
+    .dropzone .drop-actions { @apply absolute inset-x-0 bottom-0 flex justify-end gap-2 bg-gradient-to-t from-black/70 to-transparent p-3 pt-10; }
+
+    /* ---------- Avisos ---------- */
+    .toast {
+        @apply flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-2xl bg-ink-900 py-3 pl-3 pr-5 text-sm text-white
+            shadow-2xl shadow-black/30 dark:bg-ink-800 dark:ring-1 dark:ring-neon/30;
+        animation: toast-in .45s var(--ease-spring) both;
+    }
+    .toast.is-leaving { animation: toast-out .3s ease-in both; }
+    .toast-icon { @apply grid size-7 shrink-0 place-items-center rounded-full bg-ink-700 text-sm font-bold; }
+    .toast[data-tone="success"] .toast-icon { @apply bg-brand-500; }
+    .toast[data-tone="error"] .toast-icon { @apply bg-red-500; }
+    .dark .toast[data-tone="success"] .toast-icon { box-shadow: 0 0 12px rgb(61 255 180 / .6); }
+
+    .alert { @apply flex items-start gap-2 rounded-xl border px-4 py-3 text-sm leading-snug; }
+    .alert[data-tone="error"] { @apply border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300; }
+    .alert[data-tone="info"] { @apply border-brand-200 bg-brand-50 text-brand-800 dark:border-neon/25 dark:bg-neon/5 dark:text-brand-100; }
+}
+
+@keyframes backdrop-in { from { opacity: 0; } }
+@keyframes backdrop-out { to { opacity: 0; } }
+@keyframes modal-in { from { opacity: 0; transform: translateY(28px) scale(.94); } }
+@keyframes modal-out { to { opacity: 0; transform: translateY(14px) scale(.97); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(24px) scale(.9); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(12px) scale(.95); } }
+
+/* ---------- Interruptor (cuenta activa) ---------- */
+@layer components {
+    .switch { @apply relative inline-flex h-7 w-[3.25rem] shrink-0 cursor-pointer items-center rounded-full bg-ink-200 p-1 transition-colors duration-300 dark:bg-ink-700; }
+    .switch input { @apply sr-only; }
+    .switch-knob { @apply size-5 rounded-full bg-white shadow-md transition-transform duration-500; transition-timing-function: var(--ease-spring); }
+    .switch:has(:checked) { @apply bg-brand-600 dark:bg-brand-700; }
+    .switch:has(:checked) .switch-knob { transform: translateX(1.5rem); }
+    .dark .switch:has(:checked) { box-shadow: 0 0 0 1px rgb(61 255 180 / .6), 0 0 16px -2px rgb(61 255 180 / .55); }
+    .dark .switch:has(:checked) .switch-knob { @apply bg-neon; box-shadow: 0 0 10px var(--color-neon); }
+    .switch:has(:focus-visible) { @apply ring-4 ring-brand-400/40; }
+    .switch:hover .switch-knob { @apply scale-110; }
+    .switch.is-busy { @apply pointer-events-none; animation: led-pulse .9s ease-in-out infinite; }
+    .switch:has(:disabled) { @apply cursor-not-allowed opacity-60; }
+
+    .switch-row { @apply flex items-center justify-between gap-4 rounded-2xl border border-ink-200 bg-ink-50 px-5 py-4 transition dark:border-ink-700 dark:bg-ink-950/60; }
+    .switch-row:has(:checked) { @apply border-brand-300 bg-brand-50/60 dark:border-neon/30 dark:bg-neon/[.04]; }
+}

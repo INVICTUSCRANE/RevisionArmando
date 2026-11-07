@@ -1,0 +1,317 @@
+/* Contenido de cada pantalla: tarjetas, listas, carrusel, línea del tiempo y estados vacíos. */
+@layer components {
+    /* ---------- Tarjeta de sección ---------- */
+    /* Sin backdrop-blur: desenfocar lo que hay detrás de una tarjeta grande era lo más caro al desplazarse */
+    .panel {
+        @apply relative rounded-3xl border border-ink-200/70 bg-white shadow-[0_20px_50px_-30px_rgb(0_0_0/.25)]
+            dark:border-white/[.06] dark:bg-[#1b1c1c]/95;
+    }
+    .dark .panel { box-shadow: 0 0 0 1px rgb(61 255 180 / .04), 0 30px 70px -30px rgb(0 0 0 / .8); }
+    .panel-head { @apply flex flex-wrap items-start justify-between gap-4 border-b border-ink-100 px-4 py-5 sm:px-7 dark:border-white/[.06]; }
+    /* En celular el botón principal de la tarjeta ocupa el ancho */
+    @media (width < 40rem) { .panel-head > [data-add] { @apply w-full; } }
+    .panel-title { @apply text-xl font-semibold tracking-tight text-ink-900 dark:text-white; }
+    .panel-sub { @apply mt-1 text-sm text-ink-500 dark:text-ink-400; }
+    /* Contenedor: las listas y tablas de adentro se acomodan al ancho de la tarjeta, no al de la ventana */
+    .panel-body { @apply px-4 py-5 sm:px-7 sm:py-6; container-type: inline-size; }
+    .panel-note { @apply mt-6 flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400; }
+
+    /* ---------- Elementos de lista (tarjetas y filas) ---------- */
+    .item {
+        @apply relative rounded-2xl border border-ink-200/80 bg-white transition duration-300
+            hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-[0_18px_40px_-24px_rgb(33_128_102/.45)]
+            dark:border-white/[.07] dark:bg-ink-950/50 dark:hover:border-neon/35;
+    }
+    .dark .item:hover { box-shadow: 0 0 0 1px rgb(61 255 180 / .08), 0 18px 40px -20px rgb(0 0 0 / .8), 0 0 30px -14px rgb(61 255 180 / .55); }
+    .item-row { @apply flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4; }
+    .item-actions { @apply flex flex-wrap items-center gap-2; }
+
+    /* Número grande de los valores (01, 02…) */
+    .big-number { @apply font-display text-4xl leading-none font-bold text-brand-600 tabular-nums dark:text-neon; }
+    .dark .big-number { text-shadow: 0 0 6px rgb(61 255 180 / .6), 0 0 22px rgb(42 143 113 / .8); }
+
+    .price { @apply font-display text-3xl font-bold tracking-tight text-ink-900 tabular-nums dark:text-white; }
+
+    /* ---------- Carrusel ---------- */
+    /* Medidor de 10 luces: una por lugar disponible en el carrusel */
+    .led-meter { @apply grid grid-cols-10 gap-1.5; }
+    .led-meter span { @apply h-2 rounded-full bg-ink-200 dark:bg-white/[.07]; }
+    .led-meter span.is-on { @apply bg-brand-500 dark:bg-neon; animation: led-on .5s ease-out both; animation-delay: calc(var(--i, 0) * 60ms); }
+    .dark .led-meter span.is-on { box-shadow: 0 0 6px var(--color-neon), 0 0 14px rgb(61 255 180 / .5); }
+
+    .slide-media { @apply relative aspect-[16/10] overflow-hidden rounded-t-2xl bg-ink-800; }
+    .slide-media img { @apply size-full object-cover transition-transform duration-[1.4s] ease-out; }
+    .item:hover .slide-media img { @apply scale-[1.07]; }
+    .slide-media::after { content: ""; @apply pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent; }
+    .slide-order {
+        @apply absolute left-3 top-3 z-[1] grid size-10 place-items-center rounded-xl bg-brand-600 font-display text-xl font-bold text-white shadow-lg
+            dark:bg-ink-950/80 dark:text-neon dark:ring-1 dark:ring-neon/60;
+    }
+    .dark .slide-order { box-shadow: 0 0 14px -2px rgb(61 255 180 / .7); text-shadow: 0 0 8px rgb(61 255 180 / .8); }
+
+    /* ---------- Línea del tiempo ---------- */
+    .timeline { @apply relative space-y-5 pl-10 sm:pl-12; }
+    .timeline::before {
+        content: "";
+        @apply absolute bottom-6 left-[11px] top-6 w-[2px] origin-top rounded-full bg-gradient-to-b from-brand-500 via-brand-400/70 to-brand-300/20 sm:left-[15px];
+        animation: line-draw 1.1s var(--ease-out-expo) .15s both;
+    }
+    /* `dark:` no aplica dentro de ::before / ::after: esos tonos van en reglas .dark aparte */
+    .dark .timeline::before { background-image: linear-gradient(to bottom, var(--color-neon), rgb(63 166 132 / .7), transparent); box-shadow: 0 0 8px rgb(61 255 180 / .5); }
+    .timeline-node {
+        @apply absolute top-7 -left-10 grid size-6 place-items-center rounded-full border-2 border-brand-500 bg-white sm:-left-12 sm:size-8
+            dark:border-neon dark:bg-ink-950;
+    }
+    .timeline-node::after { content: ""; @apply size-2 rounded-full bg-brand-500 sm:size-2.5; }
+    .dark .timeline-node::after { background-color: var(--color-neon); }
+    .dark .timeline-node { box-shadow: 0 0 10px rgb(61 255 180 / .6); }
+    .timeline-node::before {
+        content: "";
+        @apply absolute inset-0 rounded-full border-2 border-brand-400;
+        animation: led-ring 3.6s ease-out infinite;
+        animation-delay: calc(var(--i, 0) * .6s + 1s);
+    }
+    .dark .timeline-node::before { border-color: var(--color-neon); }
+    .year { @apply font-display text-4xl leading-none font-bold text-brand-600 tabular-nums dark:text-neon; }
+    .dark .year { text-shadow: 0 0 6px rgb(61 255 180 / .55), 0 0 24px rgb(42 143 113 / .8); }
+    .thumb { @apply relative aspect-[16/10] shrink-0 overflow-hidden rounded-xl bg-ink-800; }
+    .thumb img { @apply size-full object-cover transition-transform duration-[1.4s] ease-out; }
+    .item:hover .thumb img { @apply scale-[1.07]; }
+
+    /* Atributos ligados que se despliegan */
+    .linked summary { @apply inline-flex list-none items-center gap-1.5 text-sm font-semibold text-brand-600 transition hover:text-brand-500 dark:text-neon/90 dark:hover:text-neon; }
+    .linked summary::-webkit-details-marker { display: none; }
+    .linked summary svg { @apply size-3.5 transition-transform duration-300; }
+    .linked[open] summary svg { @apply rotate-90; }
+    .linked[open] .linked-list { animation: var(--animate-enter); }
+
+    /* ---------- Selector de atributos del accesorio ---------- */
+    .picker { @apply rounded-2xl border border-ink-200 bg-ink-50 p-3 dark:border-ink-700 dark:bg-ink-950/60; }
+    .picker-list { @apply mt-3 max-h-56 space-y-1.5 overflow-y-auto pr-1; }
+    .picker-option {
+        @apply flex w-full items-center justify-between gap-3 rounded-xl bg-white px-4 py-2.5 text-left text-[15px] text-ink-800 ring-1 ring-ink-200/70 transition
+            hover:translate-x-1 hover:ring-brand-400 dark:bg-ink-900 dark:text-ink-200 dark:ring-white/[.06] dark:hover:ring-neon/50;
+    }
+    .picker-option .plus { @apply grid size-6 place-items-center rounded-lg bg-brand-50 text-brand-600 transition dark:bg-neon/10 dark:text-neon; }
+    .picker-option:hover .plus { @apply rotate-90 bg-brand-600 text-white dark:bg-neon dark:text-ink-950; }
+
+    /* ---------- Estados ---------- */
+    .empty { @apply grid place-items-center gap-3 rounded-2xl border border-dashed border-ink-200 px-6 py-12 text-center text-ink-500 dark:border-ink-700 dark:text-ink-400; }
+    .empty-icon { @apply grid size-14 place-items-center rounded-2xl bg-ink-100 text-ink-400 dark:bg-white/[.05] dark:text-ink-400; }
+
+    .skeleton { @apply relative overflow-hidden rounded-2xl bg-ink-200/60 dark:bg-white/[.05]; }
+    .skeleton::after {
+        content: "";
+        @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent;
+        animation: shimmer 1.4s ease-in-out infinite;
+    }
+    .dark .skeleton::after { background-image: linear-gradient(to right, transparent, rgb(61 255 180 / .07), transparent); }
+
+    /* Entrada escalonada: cada elemento lleva --i con su posición */
+    .enter { animation: var(--animate-enter); animation-delay: calc(min(var(--i, 0), 12) * 55ms); }
+    /* Ya dentro de la pantalla (router.js pone data-settled), buscar o filtrar solo funde la lista: sin escalonar */
+    [data-settled] [data-list] .enter { animation: var(--animate-fade-in); animation-delay: 0s; }
+    /* Destello al crear o editar un elemento */
+    .is-fresh { animation: fresh 1.6s ease-out both; }
+    .dark .is-fresh { animation-name: fresh-dark; }
+    /* Salida al eliminar */
+    .is-removing { animation: remove .45s var(--ease-out-expo) forwards; pointer-events: none; }
+
+    /* Indicador de cambios sin guardar / guardados */
+    .status-pill { @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium; animation: var(--animate-enter); }
+    .status-pill[data-state="dirty"] { @apply bg-amber-400/15 text-[#9a6400] dark:text-amber-400; }
+    .status-pill[data-state="dirty"]::before { content: ""; @apply size-2 rounded-full bg-amber-400; box-shadow: 0 0 8px var(--color-amber-400); animation: led-pulse 1.6s ease-in-out infinite; }
+    .status-pill[data-state="saved"] { @apply text-brand-700 dark:text-neon; }
+}
+
+/* Palomita que se dibuja (cambios guardados) */
+.check-draw circle { stroke-dasharray: 70; stroke-dashoffset: 70; animation: draw .6s ease-out forwards; }
+.check-draw path { stroke-dasharray: 20; stroke-dashoffset: 20; animation: draw .35s ease-out .45s forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+@keyframes led-on { 0% { opacity: 0; transform: scaleX(.3); } 60% { opacity: 1; } }
+@keyframes led-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes led-ring { 0% { opacity: .8; transform: scale(1); } 45%, 100% { opacity: 0; transform: scale(2.1); } }
+@keyframes line-draw { from { transform: scaleY(0); } }
+@keyframes shimmer { to { transform: translateX(100%); } }
+@keyframes fresh { 0% { box-shadow: 0 0 0 0 rgb(42 143 113 / .55); border-color: var(--color-brand-500); } 100% { box-shadow: 0 0 0 14px rgb(42 143 113 / 0); } }
+@keyframes fresh-dark { 0% { box-shadow: 0 0 0 0 rgb(61 255 180 / .6), 0 0 40px rgb(61 255 180 / .45); border-color: var(--color-neon); } 100% { box-shadow: 0 0 0 14px rgb(61 255 180 / 0); } }
+@keyframes remove { to { opacity: 0; transform: scale(.94) translateY(-6px); } }
+
+/* ═════════ Tablas (usuarios, solicitudes, respaldos, bitácoras) ═════════ */
+@layer components {
+    /*
+     * .table-wrap es un contenedor: la tabla decide su forma según el ancho de SU tarjeta.
+     * Con 56rem o más es tabla (con desplazamiento horizontal si aun así no cabe); con menos, cada fila
+     * es una tarjeta (dos columnas de tarjetas entre 44 y 56rem). Así se ve bien en celular, en tableta
+     * y en laptops donde el menú lateral le quita espacio.
+     */
+    .table-wrap { container-type: inline-size; }
+    .data-table { @apply w-full border-separate border-spacing-0 text-left text-[15px]; }
+    .data-table th {
+        @apply bg-ink-900 px-3.5 py-3.5 font-display text-sm font-semibold uppercase tracking-[0.12em] whitespace-nowrap text-white first:rounded-l-xl last:rounded-r-xl
+            dark:bg-black/40 dark:text-neon;
+    }
+    .dark .data-table th { box-shadow: inset 0 -1px 0 rgb(61 255 180 / .35); text-shadow: 0 0 8px rgb(61 255 180 / .45); }
+    .data-table td { @apply border-b border-ink-100 px-3.5 py-3.5 align-middle text-ink-700 dark:border-white/[.06] dark:text-ink-300; }
+    .data-table tbody tr { @apply transition-colors duration-200; }
+    .data-table tbody tr:hover td { @apply bg-brand-50/50 dark:bg-neon/[.03]; }
+    /* Barra de luz a la izquierda de la fila que tiene el cursor */
+    .data-table tbody tr td:first-child { box-shadow: inset 0 0 0 transparent; transition: box-shadow .3s, background-color .2s; }
+    .data-table tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--color-brand-500); }
+    .dark .data-table tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 var(--color-neon), inset 14px 0 18px -14px rgb(61 255 180 / .6); }
+    .data-table tr.is-muted td:not([data-keep]) > * { @apply opacity-55; }
+    .data-table tr.is-muted td:not([data-keep]) { @apply text-ink-400 dark:text-ink-500; }
+    .data-table .cell-strong { @apply font-semibold text-ink-900 dark:text-white; }
+    .data-table .row-actions { @apply flex justify-end gap-2; }
+    .data-table .row-actions .item-actions { @apply flex-nowrap; }
+    .cell-email { overflow-wrap: anywhere; }
+    .cell-media { @apply flex items-center justify-start gap-3; }
+    /* Nombre en negritas con su correo debajo (bitácora de cambios) */
+    .cell-person { @apply flex min-w-0 flex-col leading-snug; }
+    .cell-person b { @apply font-semibold text-ink-900 dark:text-white; }
+    .cell-person small { @apply mt-0.5 text-sm text-ink-500 dark:text-ink-400; overflow-wrap: anywhere; }
+
+    @container (width >= 56rem) {
+        .table-scroll { @apply overflow-x-auto; }
+        /* En tabla el correo solo se parte antes de la @ (en tarjetas puede partirse donde haga falta) */
+        .data-table .cell-email { overflow-wrap: break-word; }
+        /* …y el nombre no se parte en tres renglones cuando la tabla va justa */
+        .data-table td[data-first] .cell-strong { @apply inline-block min-w-32; }
+    }
+    /* Tabla justa (laptops chicas, o con el menú abierto): celdas más compactas para que no haga falta desplazarse */
+    @container (56rem <= width < 64rem) {
+        .data-table th, .data-table td { @apply px-2.5; }
+        .data-table .crane-thumb { @apply h-10 w-16; }
+        /* Botones de la fila solo con su ícono (el texto queda para lectores de pantalla y en el globo del cursor) */
+        .data-table .btn-sm:has(> .btn-text) { @apply w-9 px-0; }
+        .data-table .btn-sm > .btn-text { @apply sr-only; }
+    }
+
+    /* Tarjetas */
+    @container (width < 56rem) {
+        .data-table, .data-table tbody, .data-table td { display: block; }
+        .data-table thead { @apply sr-only; }
+        .data-table tbody { @apply grid gap-3; }
+        .data-table tbody tr {
+            @apply flex flex-wrap items-center rounded-2xl border border-ink-200/80 bg-white px-4 py-3 dark:border-white/[.07] dark:bg-ink-950/50;
+        }
+        .data-table td { @apply flex basis-full items-center justify-between gap-4 border-0 px-0 py-1.5 text-right; }
+        .data-table td::before { content: attr(data-label); @apply shrink-0 text-left font-display text-xs font-semibold uppercase tracking-[0.12em] text-ink-500; }
+        .data-table td[data-label=""]::before, .data-table td:not([data-label])::before { content: none; }
+        /* Encabezado de la tarjeta: la celda principal y, a su derecha, la etiqueta de estado; debajo, una línea */
+        .data-table td[data-first] { @apply order-first min-w-0 flex-1 basis-0 justify-start pt-1 pb-2 text-left; }
+        .data-table td[data-aside] { @apply order-first shrink-0 grow-0 basis-auto pt-1 pb-2 pl-3; }
+        .data-table td[data-first]::before, .data-table td[data-aside]::before { content: none; }
+        .data-table tbody tr:has(> td[data-first])::before { content: ""; @apply order-[-1] mt-1 mb-2 h-px basis-full bg-ink-100; }
+        .dark .data-table tbody tr:has(> td[data-first])::before { background-color: rgb(255 255 255 / .07); }
+        .data-table .row-actions { @apply w-full justify-end border-t border-ink-100 pt-3 dark:border-white/[.06]; }
+        .data-table td[data-keep]:last-child { @apply mt-1.5; }
+        .data-table tbody tr:hover td { background: transparent; }
+        .data-table tbody tr:hover td:first-child, .dark .data-table tbody tr:hover td:first-child { box-shadow: none; }
+        .cell-media { @apply justify-end; }
+        .cell-person { @apply items-end text-right; }
+    }
+    @container (44rem <= width < 56rem) {
+        .table-wrap:not(.is-single) .data-table tbody { @apply grid-cols-2; }
+    }
+
+    /* Iniciales de la persona */
+    .avatar-sm { @apply grid size-10 shrink-0 place-items-center rounded-full bg-brand-600 font-display text-base font-bold text-white transition dark:bg-brand-800 dark:text-neon dark:ring-1 dark:ring-neon/50; }
+    .dark .avatar-sm { box-shadow: 0 0 12px -2px rgb(61 255 180 / .5); }
+    tr.is-muted .avatar-sm { @apply bg-ink-400 text-white ring-0 dark:bg-ink-700 dark:text-ink-400; box-shadow: none; }
+
+    /* Estados (Registrado, Exitoso, Error, En proceso) */
+    .badge { @apply inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-sm font-semibold whitespace-nowrap; }
+    .badge[data-tone="ok"] { @apply bg-brand-50 text-brand-700 dark:bg-neon/10 dark:text-neon dark:ring-1 dark:ring-neon/25; }
+    .badge[data-tone="muted"] { @apply bg-ink-100 text-ink-700 dark:bg-white/[.06] dark:text-ink-300; }
+    .badge[data-tone="error"] { @apply bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300 dark:ring-1 dark:ring-red-400/30; }
+    .badge[data-tone="danger"] { @apply bg-red-600 text-white shadow-sm shadow-red-600/30 dark:bg-red-500/20 dark:text-red-200 dark:ring-1 dark:ring-red-400/60; }
+    .dark .badge[data-tone="danger"] { box-shadow: 0 0 14px -3px rgb(248 113 113 / .7); }
+    .badge svg { @apply size-4 shrink-0; }
+    .badge[data-tone="warn"] { @apply bg-amber-400/15 text-[#8a5a00] dark:bg-amber-400/10 dark:text-amber-300 dark:ring-1 dark:ring-amber-400/30; }
+    .badge[data-tone="busy"] { @apply bg-amber-400/15 text-[#9a6400] dark:text-amber-400; }
+    .badge[data-tone="busy"]::before { content: ""; @apply size-2 rounded-full bg-amber-400; box-shadow: 0 0 8px var(--color-amber-400); animation: led-pulse 1s ease-in-out infinite; }
+    .badge[data-tone="ok"].is-led::before { content: ""; @apply size-1.5 rounded-full bg-brand-500; }
+    .dark .badge[data-tone="ok"].is-led::before { background-color: var(--color-neon); box-shadow: 0 0 6px var(--color-neon); }
+
+    /* Miniatura de la grúa en las cotizaciones */
+    .crane-thumb { @apply h-12 w-20 shrink-0 overflow-hidden rounded-lg bg-ink-800 ring-1 ring-ink-200 dark:ring-white/10; }
+    .crane-thumb img { @apply size-full object-cover transition-transform duration-700; }
+    tr:hover .crane-thumb img { @apply scale-110; }
+
+    /* Mensaje del cliente con borde de luz que se dibuja */
+    .quote-block { @apply relative overflow-hidden rounded-xl bg-ink-50 py-4 pr-5 pl-6 leading-relaxed text-ink-700 dark:bg-white/[.03] dark:text-ink-200; }
+    .quote-block::before { content: ""; @apply absolute inset-y-0 left-0 w-1 origin-top bg-brand-500; animation: line-draw .7s var(--ease-out-expo) .15s both; }
+    .dark .quote-block::before { background-color: var(--color-neon); }
+    .dark .quote-block::before { box-shadow: 0 0 10px var(--color-neon); }
+
+    /* Tarjetas de acción de la pantalla de respaldos */
+    .action-card { @apply relative overflow-hidden rounded-3xl border border-ink-200/70 bg-white p-5 shadow-[0_20px_50px_-30px_rgb(0_0_0/.25)] sm:p-6 dark:border-white/[.06] dark:bg-[#1b1c1c]/95; container-type: inline-size; }
+    .action-card .card-line { @apply absolute inset-x-0 top-0 h-[3px] overflow-hidden; }
+    .action-card .card-line.is-danger { background: linear-gradient(90deg, #b91c1c, #ef4444 50%, #b91c1c); }
+    .action-card .card-line.is-danger::after { background: linear-gradient(90deg, transparent, #fecaca, transparent); animation-duration: 4s; }
+    .dark .action-card .card-line.is-danger { box-shadow: 0 0 10px rgb(248 113 113 / .6); }
+
+    /* Barra LED de progreso indeterminado (respaldar / restaurar) */
+    .led-scanner { @apply relative h-2 overflow-hidden rounded-full bg-ink-100 dark:bg-white/[.06]; }
+    .led-scanner::after {
+        content: "";
+        @apply absolute inset-y-0 left-0 w-1/3 rounded-full;
+        background: linear-gradient(90deg, transparent, var(--color-brand-500), var(--color-neon), var(--color-brand-500), transparent);
+        animation: scanner 1.6s ease-in-out infinite alternate;
+        will-change: transform;
+    }
+    .dark .led-scanner::after { box-shadow: 0 0 12px var(--color-neon); }
+    .led-scanner.is-danger::after { background: linear-gradient(90deg, transparent, #ef4444, #fca5a5, #ef4444, transparent); }
+
+    .note-warn { @apply flex items-start gap-2.5 rounded-xl border-l-4 border-amber-400 bg-amber-400/10 px-4 py-3 text-sm text-[#8a5a00] dark:text-amber-300; }
+    .note-danger { @apply flex items-start gap-2.5 rounded-xl border-l-4 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300; }
+}
+@keyframes scanner { from { transform: translateX(-30%); } to { transform: translateX(231%); } }
+
+/* ═════════ Catálogo de grúas ═════════ */
+@layer components {
+    /* Imagen sin texto encima: solo un velo suave abajo */
+    .slide-media.is-plain::after { @apply from-black/30 via-transparent; }
+
+    /* Listón de categoría sobre la foto, con un destello que la cruza al pasar el cursor */
+    .crane-ribbon {
+        @apply absolute left-0 top-4 z-[1] overflow-hidden rounded-r-xl bg-brand-600 py-1.5 pr-4 pl-4 font-display text-[15px] font-semibold tracking-wide text-white shadow-lg
+            dark:bg-ink-950/90 dark:text-neon dark:ring-1 dark:ring-neon/50;
+        animation: ribbon-in .6s var(--ease-out-expo) .2s both;
+    }
+    .dark .crane-ribbon { box-shadow: 0 0 16px -3px rgb(61 255 180 / .7); text-shadow: 0 0 8px rgb(61 255 180 / .7); }
+    .crane-ribbon::after {
+        content: "";
+        @apply absolute inset-y-0 -left-1/2 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/45 to-transparent opacity-0;
+    }
+    .item:hover .crane-ribbon::after { animation: ribbon-shine .9s ease-out; }
+
+    /* Atributos con cantidad (verdes) y opcionales (grises); entran uno tras otro */
+    .spec-chip, .opt-chip {
+        @apply inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-sm;
+        animation: chip-in .45s var(--ease-spring) both;
+        animation-delay: calc(var(--c, 0) * 45ms + 260ms);
+    }
+    .spec-chip { @apply bg-brand-50 text-brand-700 dark:bg-neon/10 dark:text-brand-100 dark:ring-1 dark:ring-neon/25; }
+    .spec-chip b { @apply font-display font-semibold tabular-nums text-brand-600 dark:text-neon; }
+    .dark .spec-chip b { text-shadow: 0 0 6px rgb(61 255 180 / .6); }
+    .opt-chip { @apply bg-ink-100 text-ink-700 dark:bg-white/[.06] dark:text-ink-300; }
+
+    /* Renglones del formulario (atributo + cantidad + quitar) */
+    .repeat-row { @apply grid items-center gap-2.5; grid-template-columns: minmax(0, 1fr) 2.75rem; animation: row-in .4s var(--ease-out-expo) both; }
+    .repeat-row.is-qty { grid-template-columns: minmax(0, 1fr) 4.75rem 2.75rem; }
+    .repeat-row.is-leaving { animation: row-out .24s ease-in forwards; pointer-events: none; }
+    .repeat-row .select { @apply min-w-0; }
+    .row-remove { @apply size-11 rounded-xl border border-ink-200 text-ink-500 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-white/10 dark:text-ink-400 dark:hover:border-red-400/50 dark:hover:bg-red-500/10 dark:hover:text-red-300; }
+    .row-remove svg { @apply transition-transform duration-300; }
+    .row-remove:hover svg { @apply rotate-90; }
+    .row-empty { @apply rounded-xl border border-dashed border-ink-200 px-4 py-3 text-sm text-ink-500 dark:border-ink-700 dark:text-ink-400; animation: var(--animate-enter); }
+}
+
+@keyframes ribbon-in { from { opacity: 0; transform: translateX(-100%); } }
+@keyframes ribbon-shine { 0% { left: -50%; opacity: 0; } 20% { opacity: 1; } 100% { left: 130%; opacity: 0; } }
+@keyframes chip-in { from { opacity: 0; transform: translateY(6px) scale(.85); } }
+@keyframes row-in { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes row-out { to { opacity: 0; transform: translateX(24px); height: 0; margin: 0; } }

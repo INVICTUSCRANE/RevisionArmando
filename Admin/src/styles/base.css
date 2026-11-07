@@ -1,0 +1,28 @@
+@layer base {
+    html { -webkit-tap-highlight-color: transparent; color-scheme: light; }
+    html.dark { color-scheme: dark; }
+    body { @apply bg-ink-100 font-sans text-[16px] leading-relaxed text-ink-800 antialiased dark:bg-ink-950 dark:text-ink-200; }
+    ::selection { @apply bg-brand-500 text-white; }
+    :focus-visible { @apply outline-2 outline-offset-2 outline-brand-400; }
+    [hidden] { display: none !important; }
+    button:not(:disabled), summary, label[for] { cursor: pointer; }
+
+    /* Mientras el menú lateral o un cuadro de diálogo están abiertos en celular, la página no se desplaza */
+    body.is-locked { overflow: hidden; }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+}
+
+/*
+ * Cambio de tema con View Transitions (src/js/features/theme.js): el navegador toma una captura de la
+ * pantalla y descubre la nueva en un círculo que crece desde el interruptor. Es mucho más ligero que
+ * animar el color de cada elemento. --vt-x, --vt-y y --vt-r los calcula theme.js.
+ */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: theme-reveal .6s var(--ease-out-expo); }
+@keyframes theme-reveal {
+    from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0)); }
+    to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 0)); }
+}

@@ -1,0 +1,118 @@
+/* Estructura del panel: menú lateral, barra superior y área de trabajo. */
+@layer components {
+    /* ---------- Menú lateral (fijo desde 1280 px; abajo es un cajón) ---------- */
+    .sidebar {
+        @apply fixed inset-y-0 left-0 z-40 flex w-[18.5rem] max-w-[86vw] -translate-x-full flex-col overflow-hidden bg-ink-900 text-white
+            transition-transform duration-500 xl:sticky xl:top-0 xl:h-dvh xl:max-w-none xl:translate-x-0
+            dark:bg-[#0f1211];
+        transition-timing-function: var(--ease-out-expo);
+        isolation: isolate;
+    }
+    .dark .sidebar { box-shadow: inset -1px 0 0 rgb(61 255 180 / .12); }
+    /* La sombra solo con el cajón abierto: cerrado, se asomaba como una franja gris en el borde izquierdo */
+    .sidebar-open .sidebar { @apply translate-x-0 shadow-2xl shadow-black/40 xl:shadow-none dark:shadow-black/70; }
+
+    /* Sin desenfoque de fondo: en celulares de gama media el blur hacía que el cajón entrara a saltos */
+    .sidebar-backdrop {
+        @apply pointer-events-none fixed inset-0 z-30 bg-ink-950/70 opacity-0 transition-opacity duration-300 xl:hidden;
+    }
+    .sidebar-open .sidebar-backdrop { @apply pointer-events-auto opacity-100; }
+
+    .nav-group-btn {
+        @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left font-semibold leading-snug text-white/85 transition
+            hover:bg-white/[.05] hover:text-white;
+    }
+    .nav-tile {
+        @apply grid size-9 shrink-0 place-items-center rounded-lg bg-white/[.06] text-white/65 ring-1 ring-white/10 transition duration-300;
+    }
+    .nav-tile svg { @apply size-[18px]; }
+    .nav-group-btn:hover .nav-tile { @apply text-white ring-white/20; }
+    .nav-group.is-current .nav-group-btn { @apply text-white; }
+    .nav-group.is-current .nav-tile { @apply bg-brand-600/35 text-neon ring-neon/45; box-shadow: 0 0 14px -2px rgb(61 255 180 / .45); }
+    .nav-group.is-current .nav-tile svg { filter: drop-shadow(0 0 4px rgb(61 255 180 / .8)); }
+    .nav-chevron { @apply ml-auto size-4 shrink-0 text-white/45 transition-transform duration-300; }
+    .nav-group.is-open .nav-chevron { @apply rotate-180 text-white/80; }
+
+    /* Enlace directo («Mis datos»): misma forma que una sección, con su LED cuando está activo */
+    .nav-group.is-direct { @apply mb-2 border-b border-white/[.07] pb-2; }
+    .nav-group.is-direct .nav-group-btn[aria-current="page"] { @apply bg-white/[.07]; }
+    .nav-group-btn .nav-led { @apply ml-auto size-1.5 shrink-0 rounded-full bg-neon opacity-0 transition-opacity; }
+    .nav-group-btn[aria-current="page"] .nav-led { @apply opacity-100; box-shadow: 0 0 6px var(--color-neon); }
+
+    /* Submenú que se despliega animando la altura (grid 0fr → 1fr) */
+    .nav-children { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease-out-expo); }
+    .nav-group.is-open .nav-children { grid-template-rows: 1fr; }
+    .nav-children > ul { @apply ml-[1.95rem] min-h-0 overflow-hidden border-l border-white/10; }
+    .nav-group.is-open .nav-children > ul { @apply py-1; }
+
+    .nav-link {
+        @apply relative my-0.5 flex items-center gap-2 rounded-r-lg py-2 pr-3 pl-4 text-[15px] text-white/55 transition
+            hover:bg-white/[.04] hover:text-white;
+    }
+    /* El texto se recorre con transform (antes cambiaba el padding y recalculaba el menú completo) */
+    .nav-link .nav-text { @apply transition-transform duration-300; }
+    .nav-link:hover .nav-text { @apply translate-x-1; }
+    .nav-link::before {
+        content: "";
+        @apply absolute -left-px top-[15%] h-[70%] w-[2px] origin-center scale-y-0 rounded-full bg-neon transition-transform duration-300;
+        box-shadow: 0 0 6px var(--color-neon), 0 0 14px rgb(61 255 180 / .6);
+    }
+    .nav-link[aria-current="page"] { @apply bg-white/[.07] font-semibold text-white; }
+    .nav-link[aria-current="page"]::before { @apply scale-y-100; }
+    .nav-link .nav-led { @apply ml-auto size-1.5 shrink-0 rounded-full bg-neon opacity-0 transition-opacity; }
+    .nav-link[aria-current="page"] .nav-led { @apply opacity-100; animation: led-pulse 2.4s ease-in-out infinite; }
+    .nav-link .nav-soon { @apply ml-auto rounded-md bg-white/[.06] px-1.5 py-0.5 font-display text-[11px] font-semibold uppercase tracking-wider text-white/40; }
+
+    /* En pantallas táctiles los renglones del menú son más altos (más fáciles de tocar) */
+    @media (pointer: coarse) {
+        .nav-link { @apply py-2.5; }
+        .nav-group-btn { @apply py-3; }
+    }
+
+    /* ---------- Barra superior ---------- */
+    /* Fondo casi opaco en vez de desenfoque: el blur sobre una barra fija se recalcula en cada cuadro al desplazarse */
+    .topbar {
+        @apply sticky top-0 z-20 flex min-h-[4.5rem] items-center gap-3 bg-white/95 px-4 py-3 sm:min-h-[5.5rem] sm:gap-4 sm:px-6 sm:py-4 xl:px-10
+            dark:bg-ink-950/95;
+        padding-top: max(.75rem, env(safe-area-inset-top));
+    }
+    .menu-btn {
+        @apply grid size-11 shrink-0 place-items-center rounded-xl border border-ink-200 bg-white text-ink-700 transition hover:border-brand-400
+            hover:text-brand-600 xl:hidden dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200 dark:hover:border-neon/50 dark:hover:text-neon;
+    }
+    .eyebrow { @apply font-display text-xs font-semibold uppercase tracking-[0.2em] text-brand-600 sm:text-sm dark:text-neon; }
+    .dark .eyebrow { text-shadow: 0 0 10px rgb(61 255 180 / .45); }
+    /* En celular el título puede ocupar dos renglones en lugar de cortarse con "…" */
+    .page-title {
+        @apply mt-0.5 line-clamp-2 text-xl leading-tight font-semibold tracking-tight text-ink-900 sm:mt-1 sm:line-clamp-1 sm:text-3xl
+            dark:text-white;
+    }
+
+    /* Botón de sonidos */
+    .sound-btn {
+        @apply relative grid size-10 shrink-0 place-items-center rounded-full border border-ink-200 bg-white text-ink-600 transition
+            hover:border-brand-400 hover:text-brand-600 sm:size-11
+            dark:border-ink-700 dark:bg-ink-900 dark:text-ink-300 dark:hover:border-neon/50 dark:hover:text-neon;
+    }
+    .sound-btn[aria-pressed="true"] { @apply border-brand-300 text-brand-600 dark:border-neon/40 dark:text-neon; }
+    .dark .sound-btn[aria-pressed="true"] { box-shadow: 0 0 14px -4px rgb(61 255 180 / .6); }
+    /* Ecualizador que salta un momento al activar */
+    .sound-bars { @apply pointer-events-none absolute -right-0.5 -bottom-0.5 hidden h-3 items-end gap-px rounded-full bg-white px-1 py-0.5 dark:bg-ink-900; }
+    .sound-bars i { @apply block h-full w-[2px] origin-bottom rounded-full bg-brand-500 dark:bg-neon; }
+    .sound-btn.is-pinged[aria-pressed="true"] .sound-bars { @apply flex; animation: fade-in .2s both reverse 1s; }
+    .sound-btn.is-pinged[aria-pressed="true"] .sound-bars i { animation: eq .3s ease-in-out 4 alternate; }
+    .sound-bars i:nth-child(2) { animation-delay: .1s !important; }
+    .sound-bars i:nth-child(3) { animation-delay: .2s !important; }
+
+    /* Área de trabajo con la cuadrícula tenue del portal */
+    .workspace {
+        @apply relative min-w-0 flex-1;
+        background-image: linear-gradient(rgb(0 0 0 / .03) 1px, transparent 1px), linear-gradient(90deg, rgb(0 0 0 / .03) 1px, transparent 1px);
+        background-size: 48px 48px;
+    }
+    .dark .workspace {
+        background-image: linear-gradient(rgb(61 255 180 / .03) 1px, transparent 1px), linear-gradient(90deg, rgb(61 255 180 / .03) 1px, transparent 1px);
+    }
+}
+
+@keyframes eq { from { transform: scaleY(.3); } to { transform: scaleY(1); } }

@@ -1,0 +1,27 @@
+/*
+ * Hoja de estilos del panel del administrador. Usa el mismo tema que el portal de acceso
+ * (colores, fuentes, neón) para que ambos se sientan parte del mismo producto.
+ * El diseño vive en clases de Tailwind dentro del HTML y de las plantillas de src/js;
+ * aquí quedan los componentes repetidos y los efectos que Tailwind no expresa con utilidades.
+ * Compilar con `npm run build`.
+ */
+@import "tailwindcss" source(none);
+
+@source "../../index.html";
+@source "../js";
+
+/*
+ * Modo oscuro por clase en <html> (lo pone src/js/features/theme.js).
+ * Ojo: `dark:` no funciona dentro de reglas ::before / ::after (el anidado no admite seudoelementos);
+ * ahí se escribe aparte como `.dark .elemento::before { … }`.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import "./theme.css";
+@import "./fonts.css";
+@import "./base.css";
+@import "./components/layout.css";
+@import "./components/ui.css";
+@import "./components/content.css";
+@import "./components/neon.css";
+@import "./components/pages.css";
