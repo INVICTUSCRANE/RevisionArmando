@@ -1,0 +1,14 @@
+FOTOGRAFÍAS DEL SITIO
+=====================
+
+Guarda aquí cada foto con el nombre exacto que indica FOTOS.md (en la raíz del proyecto).
+No hace falta tocar código ni volver a compilar: al recargar la página la foto aparece sola.
+
+  inicio/      carrusel principal (hero-1..3)
+  lineas/      plataformas, rescate, wheel-lift y underlift
+  accesorios/  una foto por accesorio del catálogo
+  paginas/     encabezados de Nosotros, Reparaciones y Contacto
+  historia/    fotos de la trayectoria (2006 ... 2026)
+
+Formato JPG, horizontal, de 1600 px de ancho o más (el carrusel, 1920 px).
+Mientras falte una foto se ve la de la versión anterior o un marco con el logotipo.

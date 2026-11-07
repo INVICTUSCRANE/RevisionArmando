@@ -1,0 +1,25 @@
+/*
+ * Hoja de estilos principal. Casi todo el diseño vive en clases de Tailwind dentro del HTML/JS;
+ * aquí solo quedan el tema y los componentes que Tailwind no puede expresar con utilidades
+ * (neón y LED, el libro, la línea de ensamble, etc.). Compilar con `npm run build`.
+ */
+@import "tailwindcss" source(none);
+
+@source "../../index.html";
+@source "../../pages";
+@source "../js";
+
+@import "./theme.css";
+@import "./fonts.css";
+@import "./base.css";
+@import "./components/ui.css";
+@import "./components/neon.css";
+@import "./components/ambient.css";
+@import "./components/header.css";
+@import "./components/hero.css";
+@import "./components/scenes.css";
+@import "./components/sections.css";
+@import "./components/cart.css";
+@import "./components/book.css";
+@import "./components/book-pages.css";
+@import "./components/book-launcher.css";

@@ -1,0 +1,140 @@
+/*
+ * Marco del libro virtual: halo LED que sigue a la parte visible, lomo de luz, zonas de clic,
+ * canto de hojas, flechas y barra de herramientas. La curvatura de la hoja la dibuja StPageFlip.
+ * features/catalog/flipbook.js escribe --vis-x/--vis-w (parte visible), --bk-y/--bk-h y --spine-x.
+ */
+@layer components {
+    .book { @apply flex flex-col items-center gap-3; touch-action: manipulation; }
+    .book-stage { @apply flex w-full items-center justify-center gap-2 sm:gap-4; }
+
+    .book-frame {
+        @apply relative w-full;
+        /* Dos páginas de 560×740 → proporción 1.51. El alto disponible es la pantalla menos
+           encabezado, título y barra (--book-chrome), así el libro se ve completo sin pantalla completa. */
+        max-width: min(1500px, max(560px, calc((100svh - var(--book-chrome, 15.5rem)) * 1.51)));
+        transform: translateX(var(--book-shift, 0));
+        transition: transform .8s var(--ease-out-expo);
+    }
+    .book-pages { @apply relative; }
+
+    /* Halo LED alrededor del libro con un destello que recorre el borde */
+    .book-glow {
+        @apply pointer-events-none absolute rounded-md;
+        left: var(--vis-x, 0); top: var(--bk-y, 0); width: var(--vis-w, 100%); height: var(--bk-h, 100%);
+        box-shadow: 0 0 0 1px rgb(61 255 180 / .45), 0 0 22px rgb(61 255 180 / .35), 0 0 70px rgb(42 143 113 / .45), 0 40px 70px -24px rgb(0 0 0 / .9);
+        transition: left .8s var(--ease-out-expo), width .8s var(--ease-out-expo), opacity .4s;
+    }
+    .book-glow::before {
+        content: "";
+        @apply absolute -inset-[3px] rounded-[inherit];
+        padding: 2px;
+        background: conic-gradient(from var(--angle), transparent 0deg 215deg, rgb(178 124 255 / .4) 262deg, rgb(61 255 180 / .45) 300deg, var(--color-neon) 338deg, var(--color-gold) 354deg, transparent 360deg);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: frame-spin 5s linear infinite;
+        filter: drop-shadow(0 0 6px var(--color-neon));
+    }
+
+    /* Lomo: línea de luz en el canal central cuando el libro está abierto */
+    .book-spine {
+        @apply pointer-events-none absolute z-10 w-[3px] -translate-x-1/2 opacity-0 transition-opacity duration-500;
+        left: var(--spine-x, 50%); top: var(--bk-y, 0); height: var(--bk-h, 100%);
+        background: linear-gradient(to bottom, transparent, var(--color-neon) 20%, var(--color-neon) 80%, transparent);
+        box-shadow: 0 0 10px var(--color-neon), 0 0 24px rgb(61 255 180 / .5);
+    }
+    .book.is-spread .book-spine { opacity: .55; animation: spine-pulse 3s ease-in-out infinite; }
+    .book.is-flipping .book-spine { @apply opacity-0; animation: none; }
+
+    /* Zonas de clic: se ilumina el borde de la hoja que se va a pasar */
+    .book-zone {
+        @apply pointer-events-none absolute z-10 flex items-center opacity-0 transition-opacity duration-300;
+        top: var(--bk-y, 0); height: var(--bk-h, 100%); width: min(22%, 9rem);
+    }
+    .book-zone.is-prev { left: var(--vis-x, 0); @apply justify-start pl-3; background: linear-gradient(to right, rgb(61 255 180 / .22), transparent); }
+    .book-zone.is-next { left: calc(var(--vis-x, 0px) + var(--vis-w, 0px)); @apply -translate-x-full justify-end pr-3; background: linear-gradient(to left, rgb(61 255 180 / .22), transparent); }
+    .book-zone span {
+        @apply grid size-11 place-items-center rounded-full border border-neon/70 bg-ink-950/80 font-display text-3xl leading-none text-neon;
+        box-shadow: 0 0 16px rgb(61 255 180 / .6);
+    }
+    .book-frame[data-zone="prev"] .book-zone.is-prev, .book-frame[data-zone="next"] .book-zone.is-next { @apply opacity-100; }
+    .book-frame[data-zone="prev"] .book-pages, .book-frame[data-zone="next"] .book-pages { @apply cursor-pointer; }
+    .book.is-flipping .book-zone { @apply opacity-0; }
+
+    /* Canto de hojas apiladas a cada lado; su grosor cambia con el avance */
+    .book-edges { @apply pointer-events-none absolute inset-0; }
+    .book-edge {
+        @apply absolute rounded-sm opacity-0 transition-all duration-700;
+        top: var(--bk-y, 0);
+        height: var(--bk-h, 100%);
+        background:
+            linear-gradient(to bottom, rgb(61 255 180 / .2), transparent 10%, transparent 90%, rgb(61 255 180 / .2)),
+            repeating-linear-gradient(to right, #26302d 0 1px, #0d1110 1px 2px);
+    }
+    .book-edge.is-left {
+        right: calc(100% - var(--vis-x, 0px) + 3px);
+        width: var(--edge-left, 0);
+        transform: translateY(3px) skewY(-6deg);
+        transform-origin: right;
+    }
+    .book-edge.is-right {
+        left: calc(var(--vis-x, 0px) + var(--vis-w, 0px) + 3px);
+        width: var(--edge-right, 0);
+        transform: translateY(3px) skewY(6deg);
+        transform-origin: left;
+    }
+    .has-left-page .book-edge.is-left, .has-right-page .book-edge.is-right { @apply opacity-100; }
+    .book.is-closed .book-edge { @apply opacity-0; }
+
+    .book-arrow {
+        @apply z-10 hidden size-14 shrink-0 place-items-center rounded-full border border-neon/30 bg-ink-950/80 text-white transition duration-300
+            hover:scale-110 hover:border-neon hover:bg-brand-600 disabled:pointer-events-none disabled:opacity-20 md:grid;
+    }
+    .book-arrow:hover { box-shadow: 0 0 24px rgb(61 255 180 / .55); }
+
+    .book-toolbar {
+        @apply relative flex w-full max-w-4xl items-center gap-1 rounded-2xl border border-neon/20 bg-ink-950/90 p-1.5 text-white sm:gap-2;
+        box-shadow: 0 0 30px -10px rgb(61 255 180 / .4);
+    }
+    .book-toolbar::before {
+        content: "";
+        @apply absolute inset-x-10 -top-px h-px rounded-full;
+        background: linear-gradient(90deg, transparent, var(--color-brand-500) 25%, var(--color-neon) 50%, var(--color-brand-500) 75%, transparent) 0 0 / 200% 100%;
+        box-shadow: 0 0 10px rgb(61 255 180 / .55);
+        animation: led-run 3.2s linear infinite;
+    }
+    .book-tool {
+        @apply inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-xl px-2.5 font-display font-semibold uppercase tracking-wide text-white/85 transition
+            hover:bg-neon/10 hover:text-white disabled:pointer-events-none disabled:opacity-30 sm:px-3;
+    }
+    .book-tool.is-cart { @apply border border-neon/30 text-neon; }
+    .book-tool.is-cart.is-pinged { animation: bump .5s var(--ease-spring); }
+    .book-cart-badge {
+        @apply absolute -right-2.5 -top-2.5 grid h-5 min-w-5 place-items-center rounded-full bg-gold px-1 font-sans text-[11px] font-bold leading-none text-ink-900 transition-transform;
+        box-shadow: 0 0 8px rgb(242 196 90 / .8);
+    }
+    .book-cart-badge[data-cart-count="0"] { @apply scale-0; }
+    .book-counter { @apply whitespace-nowrap font-display text-sm font-semibold uppercase tabular-nums tracking-[0.14em] text-neon; text-shadow: 0 0 8px rgb(61 255 180 / .6); }
+    .book-slider { @apply h-1.5 w-full max-w-xs cursor-pointer appearance-none rounded-full bg-white/15 accent-brand-500; }
+    .book-slider::-webkit-slider-thumb { @apply size-4 appearance-none rounded-full transition hover:scale-125; background: var(--color-neon); box-shadow: 0 0 0 4px rgb(61 255 180 / .2), 0 0 10px var(--color-neon); }
+    .book-slider::-moz-range-thumb { @apply size-4 rounded-full border-0; background: var(--color-neon); }
+
+    .book:fullscreen { @apply justify-center bg-ink-950 p-4; --book-chrome: 6rem; }
+    .book:fullscreen .book-frame { max-width: min(2000px, calc((100svh - 6rem) * 1.51)); }
+}
+
+/* Fondo de las páginas de catálogo: mesa oscura con cuadrícula de neón (ver features/ambient.js) */
+@layer components {
+    .book-desk {
+        @apply relative isolate overflow-hidden bg-ink-950;
+        background-image:
+            radial-gradient(ellipse 60% 50% at 50% 50%, rgb(61 255 180 / .07), transparent 70%),
+            radial-gradient(ellipse 40% 45% at 100% 100%, rgb(108 63 212 / .18), transparent 70%),
+            radial-gradient(ellipse at top, rgb(33 128 102 / .25), transparent 55%);
+    }
+    .catalog-head { @apply flex flex-wrap items-baseline justify-center gap-x-5 gap-y-1 px-4 text-center; }
+    .catalog-title { @apply flex items-center gap-3 font-display text-2xl font-bold uppercase leading-none tracking-wide text-white sm:text-3xl; }
+    .catalog-sub { @apply text-sm text-ink-300; }
+}
+
+@keyframes spine-pulse { 50% { opacity: .9; } }

@@ -1,0 +1,61 @@
+/*
+ * Tokens de marca: verde Invictus, gris carbón, ámbar de las grúas y el verde neón del portal.
+ * Morado y dorado son acentos: detalles pequeños (filos, números, chispas, sellos); el verde manda.
+ */
+@theme {
+    --font-sans: "Barlow", Calibri, Carlito, system-ui, sans-serif;
+    --font-display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+
+    --color-brand-50: #ecf8f3;
+    --color-brand-100: #d0eee2;
+    --color-brand-200: #a4dcc7;
+    --color-brand-300: #6fc3a6;
+    --color-brand-400: #3fa684;
+    --color-brand-500: #2a8f71;
+    --color-brand-600: #218066;
+    --color-brand-700: #1b6853;
+    --color-brand-800: #175343;
+    --color-brand-900: #123f33;
+
+    --color-ink-50: #f6f6f5;
+    --color-ink-100: #eaeaea;
+    --color-ink-200: #d6d4d4;
+    --color-ink-300: #b1acac;
+    --color-ink-400: #9a9494;
+    --color-ink-500: #857f7f;
+    --color-ink-600: #615c5c;
+    --color-ink-700: #454242;
+    --color-ink-800: #2a2a2a;
+    --color-ink-900: #1f1f1f;
+    --color-ink-950: #141515;
+
+    --color-amber-400: #ffb938;
+    --color-neon: #3dffb4;
+    --color-gold: #f2c45a;
+    --color-gold-deep: #9a6d0c;
+    --color-violet: #b27cff;
+    --color-violet-deep: #6c3fd4;
+    --color-paper: #f6f1e4;
+
+    --ease-spring: cubic-bezier(.2, .9, .25, 1.12);
+    --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+
+    --animate-fade-up: fade-up .7s var(--ease-out-expo) both;
+    --animate-float: float 3.2s ease-in-out infinite;
+    --animate-ping-slow: ping 2.4s cubic-bezier(0, 0, .2, 1) infinite;
+    --animate-bump: bump .5s var(--ease-spring);
+    --animate-wiggle: wiggle .6s ease-in-out;
+    --animate-press: press .35s ease-out;
+    --animate-shake: shake .45s ease-in-out;
+    --animate-swap: swap .6s var(--ease-out-expo);
+    --animate-ken-burns: ken-burns 18s ease-in-out infinite alternate;
+
+    @keyframes fade-up { from { opacity: 0; transform: translateY(24px); } }
+    @keyframes float { 50% { transform: translateY(-8px); } }
+    @keyframes bump { 30% { transform: scale(1.5); } 60% { transform: scale(.9); } }
+    @keyframes wiggle { 20% { transform: rotate(-12deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-6deg); } 80% { transform: rotate(3deg); } }
+    @keyframes press { 40% { transform: scale(.92); } }
+    @keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+    @keyframes swap { from { opacity: 0; transform: translateY(16px) scale(.98); filter: blur(4px); } }
+    @keyframes ken-burns { from { transform: scale(1.1); } to { transform: scale(1.22) translate(-2%, -1%); } }
+}

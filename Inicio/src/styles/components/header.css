@@ -1,0 +1,124 @@
+/* Encabezado fijo compacto (con tira LED y redes sociales), menús, botones del carrito y la cuenta, pie de página y WhatsApp. */
+@layer components {
+    .site-header {
+        @apply fixed inset-x-0 top-0 z-50 h-16 text-white transition-[height,background-color,box-shadow] duration-500 xl:h-[4.5rem];
+        background: linear-gradient(to bottom, rgb(20 21 21 / .9), rgb(20 21 21 / 0));
+    }
+    /* Sin desenfoque de fondo: con el fondo LED animado debajo, el desenfoque se recalcularía en cada cuadro */
+    .site-header.is-scrolled { @apply h-14 bg-ink-950/95 shadow-2xl shadow-black/40 xl:h-16; }
+
+    .header-logo { @apply relative isolate shrink-0 transition-transform duration-300 hover:scale-[1.04]; }
+    .header-logo img { @apply h-9 w-auto rounded-lg sm:h-10 2xl:h-11; filter: drop-shadow(0 6px 14px rgb(0 0 0 / .45)); }
+    /* Resplandor verde que respira detrás del logotipo (solo opacidad) */
+    .header-logo::before {
+        content: ""; @apply pointer-events-none absolute -inset-x-3 -inset-y-2 -z-10 rounded-2xl opacity-0;
+        background: radial-gradient(closest-side, rgb(61 255 180 / .32), transparent);
+        animation: logo-glow 4s ease-in-out infinite;
+    }
+    .is-scrolled .header-logo img { @apply h-8 sm:h-9 2xl:h-10; }
+
+    /* Tira LED inferior: una línea tenue y encima el avance de lectura con brillo */
+    .header-led { @apply absolute inset-x-0 bottom-0 h-px bg-neon/0 transition-colors duration-500; }
+    .is-scrolled .header-led { @apply bg-neon/15; }
+    #scrollProgress {
+        @apply absolute inset-0 origin-left scale-x-0;
+        background: linear-gradient(90deg, var(--color-brand-500), var(--color-neon) 65%, var(--color-gold));
+        box-shadow: 0 0 8px var(--color-neon), 0 0 18px rgb(61 255 180 / .5);
+    }
+
+    .nav-link {
+        @apply relative rounded-lg px-2.5 py-2 font-display text-[1.05rem] font-semibold uppercase tracking-wide text-white/80 transition duration-300 hover:text-white 2xl:px-3.5 2xl:text-[1.15rem];
+    }
+    .nav-link:hover { text-shadow: 0 0 10px rgb(61 255 180 / .65); }
+    .nav-link::after {
+        content: "";
+        @apply absolute inset-x-2.5 bottom-0.5 h-0.5 origin-left scale-x-0 rounded-full transition-transform duration-300 ease-out 2xl:inset-x-3.5;
+        background: linear-gradient(90deg, var(--color-neon) 65%, var(--color-gold));
+        box-shadow: 0 0 6px var(--color-neon), 0 0 14px rgb(61 255 180 / .7);
+    }
+    .nav-link:hover::after, .nav-link.is-active::after { @apply scale-x-100; }
+    .nav-link.is-active { @apply text-white; text-shadow: 0 0 12px rgb(61 255 180 / .55); }
+
+    .dropdown-panel {
+        @apply overflow-hidden rounded-2xl border border-neon/25 bg-ink-950/[.97] p-2;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / .7), 0 0 30px -6px rgb(61 255 180 / .3);
+    }
+    .dropdown-link {
+        @apply flex items-center gap-3 rounded-xl px-3 py-2.5 font-display text-lg font-semibold uppercase text-white/80 transition-all duration-200 hover:translate-x-1 hover:bg-neon/5 hover:text-white;
+    }
+    .dropdown-led { @apply h-6 w-1 rounded-full bg-white/10 transition duration-200; }
+    .dropdown-link:hover > .dropdown-led, .dropdown-link.is-active > .dropdown-led { background: var(--color-neon); box-shadow: 0 0 8px var(--color-neon); }
+
+    .account-btn {
+        @apply flex h-10 items-center gap-2 rounded-xl border border-white/15 px-2.5 text-[.9rem] font-semibold text-white/90 transition duration-300 hover:border-neon/60 hover:bg-white/5;
+    }
+    .account-btn:hover { box-shadow: 0 0 18px -4px rgb(61 255 180 / .55); }
+    .cart-btn {
+        @apply relative grid size-10 place-items-center rounded-xl bg-brand-600 text-white shadow-lg shadow-brand-900/40 transition duration-300 hover:-translate-y-0.5 hover:bg-brand-500;
+    }
+    .cart-btn:hover { box-shadow: 0 0 0 1px rgb(61 255 180 / .5), 0 0 22px rgb(61 255 180 / .45); }
+    /* Anillo de neón que sale del carrito cuando se agrega algo */
+    .cart-btn::after { content: ""; @apply pointer-events-none absolute inset-0 rounded-xl opacity-0; box-shadow: 0 0 0 2px var(--color-neon), 0 0 18px var(--color-neon); }
+    .cart-btn.is-pinged::after { animation: cart-ping .9s ease-out; }
+    .cart-badge {
+        @apply absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-gold px-1 text-[.7rem] font-bold text-ink-900 ring-2 ring-ink-950 transition-transform;
+        box-shadow: 0 0 10px rgb(242 196 90 / .7);
+    }
+    .cart-badge[data-cart-count="0"] { @apply scale-0; }
+    .menu-toggle { @apply grid size-10 place-items-center rounded-xl text-white transition hover:bg-white/10; }
+
+    .social-btn {
+        @apply grid place-items-center rounded-full border border-white/10 text-white/80 transition duration-300 hover:-translate-y-1 hover:border-neon/60 hover:bg-brand-600 hover:text-white;
+    }
+    .social-btn:hover { box-shadow: 0 0 16px rgb(61 255 180 / .45); }
+    /* Al pasar el cursor cada red toma su color, con el mismo brillo de neón */
+    .social-btn.is-facebook:hover { @apply border-[#1877f2] bg-[#1877f2]; box-shadow: 0 0 16px rgb(24 119 242 / .55); }
+    .social-btn.is-instagram:hover { @apply border-[#e1306c]; background: linear-gradient(45deg, #f9a825, #e1306c 50%, #833ab4); box-shadow: 0 0 16px rgb(225 48 108 / .5); }
+    .social-btn.is-tiktok:hover { @apply border-white/60 bg-black; box-shadow: -2px -2px 0 rgb(37 244 238 / .9), 2px 2px 0 rgb(254 44 85 / .9), 0 0 16px rgb(37 244 238 / .35); }
+    .header-social .social-btn { @apply border-white/15 bg-white/[.03]; }
+
+    .mobile-menu {
+        @apply invisible fixed inset-0 z-[45] isolate flex flex-col overflow-y-auto bg-ink-950/[.98] px-6 pb-10 pt-20 opacity-0 transition-all duration-500;
+        clip-path: circle(0 at calc(100% - 2.5rem) 2.5rem);
+    }
+    .mobile-menu > * { @apply shrink-0; } /* con poco alto, el menú se desplaza en vez de aplastar los enlaces */
+    .mobile-menu.is-open { @apply visible opacity-100; clip-path: circle(150% at calc(100% - 2.5rem) 2.5rem); }
+    .mobile-menu:not(.is-open) [data-ambient] * { animation-play-state: paused !important; }
+    .mobile-link {
+        @apply block border-b border-white/5 py-3 font-display text-3xl font-semibold uppercase text-white/80 transition hover:pl-2 hover:text-brand-300;
+        opacity: 0; transform: translateX(-24px);
+    }
+    .mobile-link.is-active { color: var(--color-neon); text-shadow: 0 0 12px rgb(61 255 180 / .6); }
+    .mobile-menu.is-open .mobile-link { animation: fade-in-left .5s var(--ease-out-expo) calc(var(--i) * 45ms + 150ms) both; }
+
+    .footer-title { @apply mb-5 font-display text-lg font-semibold uppercase tracking-[0.2em] text-white; }
+    .footer-title::after { content: ""; @apply mt-2 block h-0.5 w-10 rounded-full; background: linear-gradient(90deg, var(--color-neon), var(--color-gold)); box-shadow: 0 0 8px rgb(61 255 180 / .5); }
+    .footer-link { @apply inline-block text-ink-300 transition duration-200 hover:translate-x-1 hover:text-brand-300; }
+    .footer-link:hover { text-shadow: 0 0 10px rgb(61 255 180 / .5); }
+    /* Redes sociales del pie: botón con el ícono en el color de cada red */
+    .footer-social {
+        @apply inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[.04] py-1.5 pl-1.5 pr-4 font-display text-base font-semibold uppercase tracking-wider text-white/85 transition duration-300 hover:-translate-y-1 hover:border-neon/50 hover:text-white;
+    }
+    .footer-social:hover { box-shadow: 0 0 18px -2px rgb(61 255 180 / .4); }
+    .footer-social-icon { @apply grid size-9 place-items-center rounded-full text-white transition-transform duration-300; }
+    .footer-social:hover .footer-social-icon { @apply scale-110 -rotate-6; }
+    .footer-social.is-facebook .footer-social-icon { @apply bg-[#1877f2]; box-shadow: 0 0 12px rgb(24 119 242 / .45); }
+    .footer-social.is-instagram .footer-social-icon { background: linear-gradient(45deg, #f9a825, #e1306c 50%, #833ab4); box-shadow: 0 0 12px rgb(225 48 108 / .45); }
+    .footer-social.is-tiktok .footer-social-icon { @apply bg-black ring-1 ring-white/20; box-shadow: -1.5px -1.5px 0 rgb(37 244 238 / .85), 1.5px 1.5px 0 rgb(254 44 85 / .85); }
+
+    .wa-float {
+        @apply fixed bottom-6 right-6 z-40 grid size-16 place-items-center rounded-full bg-[#25d366] text-white shadow-xl shadow-[#25d366]/40 transition duration-300 hover:scale-110;
+    }
+    .wa-float::before, .wa-float::after {
+        content: ""; @apply absolute inset-0 rounded-full border-2 border-[#25d366];
+        animation: wa-ring 2.6s ease-out infinite;
+    }
+    .wa-float::after { animation-delay: 1.3s; }
+    /* En los catálogos el botón se hace chico para no tapar el libro ni su barra */
+    :is([data-page="catalogo"], [data-page="accesorios"]) .wa-float { @apply bottom-4 right-4 size-12 md:size-14; }
+}
+
+@keyframes fade-in-left { to { opacity: 1; transform: none; } }
+@keyframes wa-ring { from { transform: scale(1); opacity: .7; } to { transform: scale(1.7); opacity: 0; } }
+@keyframes cart-ping { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.8); } }
+@keyframes logo-glow { 50% { opacity: 1; } }

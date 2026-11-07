@@ -1,0 +1,116 @@
+/*
+ * Toques LED y neón compartidos por todo el sitio (los mismos del portal interno):
+ * palabra en neón, marcos con destello que gira, tiras LED, esquinas tipo HUD,
+ * letrero LED de matriz de puntos y números luminosos.
+ * El verde es el color principal; el dorado y el morado aparecen solo en filos y detalles.
+ */
+
+/* Registra el ángulo para poder animar el degradado cónico de los marcos */
+@property --angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+
+@layer components {
+    /* Palabra en neón: se enciende con parpadeo y luego zumba */
+    .neon-word {
+        color: var(--color-neon);
+        text-shadow: 0 0 4px rgb(61 255 180 / .9), 0 0 14px rgb(61 255 180 / .6), 0 0 34px rgb(42 143 113 / .8), 0 0 60px rgb(42 143 113 / .5);
+        animation: neon-flicker 1.4s ease-out .5s both, neon-hum 6s ease-in-out 2.4s infinite;
+    }
+    .neon-text { color: var(--color-neon); text-shadow: 0 0 6px rgb(61 255 180 / .7), 0 0 18px rgb(42 143 113 / .6); }
+    .neon-rule { @apply inline-block h-px w-12 shrink-0; background: var(--color-neon); box-shadow: 0 0 6px var(--color-neon), 0 0 14px rgb(61 255 180 / .6); }
+
+    /* Eyebrow con raya de neón al inicio: <p class="eyebrow-led">Texto</p> */
+    .eyebrow-led { @apply flex items-center gap-4 font-display text-sm font-semibold uppercase tracking-[0.4em] text-white/85; }
+    .eyebrow-led::before { content: ""; @apply inline-block h-px w-12 shrink-0; background: linear-gradient(90deg, var(--color-neon) 60%, var(--color-gold)); box-shadow: 0 0 6px var(--color-neon), 0 0 14px rgb(61 255 180 / .6); }
+    .eyebrow-led.is-dark { @apply text-brand-700; }
+    .eyebrow-led.is-dark::before { background: linear-gradient(90deg, var(--color-brand-500) 60%, var(--color-gold-deep)); box-shadow: none; }
+
+    /* Marco con un destello que recorre el borde (como la tarjeta del login): estela morada, luz verde y punta dorada */
+    .neon-frame { position: relative; isolation: isolate; }
+    .neon-frame::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        z-index: -1;
+        border-radius: inherit;
+        padding: 1.5px;
+        background: conic-gradient(from var(--angle), transparent 0deg 225deg, rgb(178 124 255 / .35) 268deg, rgb(61 255 180 / .45) 305deg, var(--color-neon) 338deg, var(--color-gold) 354deg, transparent 360deg);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: frame-spin 6s linear infinite;
+        pointer-events: none;
+    }
+    .neon-frame.is-soft::before { opacity: .6; }
+    .neon-frame.on-hover::before { opacity: 0; transition: opacity .4s; animation-play-state: paused; }
+    .neon-frame.on-hover:is(:hover, :focus-visible)::before { animation-play-state: running; }
+    .neon-frame.on-hover:hover::before, .neon-frame.on-hover:focus-visible::before { opacity: 1; }
+
+    /* Tira LED con un destello que corre de lado a lado (verde con filos morado y dorado) */
+    .led-strip {
+        background: linear-gradient(90deg, transparent, rgb(178 124 255 / .8) 18%, var(--color-brand-500) 32%, var(--color-neon) 50%, var(--color-brand-500) 68%, rgb(242 196 90 / .85) 82%, transparent);
+        background-size: 200% 100%;
+        box-shadow: 0 0 10px rgb(61 255 180 / .55), 0 0 26px rgb(42 143 113 / .4);
+        animation: led-run 3.2s linear infinite;
+    }
+
+    /* Esquinas tipo visor (HUD) sobre fotos y tarjetas */
+    .hud-corners { position: relative; }
+    .hud-corners::after {
+        content: "";
+        @apply pointer-events-none absolute inset-3 z-10 transition-[inset,opacity] duration-500;
+        --c: var(--color-neon);
+        --s: 22px;
+        --w: 2px;
+        background:
+            linear-gradient(var(--c), var(--c)) top left / var(--s) var(--w) no-repeat,
+            linear-gradient(var(--c), var(--c)) top left / var(--w) var(--s) no-repeat,
+            linear-gradient(var(--c), var(--c)) top right / var(--s) var(--w) no-repeat,
+            linear-gradient(var(--c), var(--c)) top right / var(--w) var(--s) no-repeat,
+            linear-gradient(var(--c), var(--c)) bottom left / var(--s) var(--w) no-repeat,
+            linear-gradient(var(--c), var(--c)) bottom left / var(--w) var(--s) no-repeat,
+            linear-gradient(var(--c), var(--c)) bottom right / var(--s) var(--w) no-repeat,
+            linear-gradient(var(--c), var(--c)) bottom right / var(--w) var(--s) no-repeat;
+        filter: drop-shadow(0 0 4px rgb(61 255 180 / .8));
+        opacity: .75;
+    }
+    .group:hover .hud-corners::after, .hud-corners:hover::after { @apply inset-2 opacity-100; }
+
+    /* Letrero LED: el texto corre por debajo de una rejilla fija de puntos */
+    .led-ticker { @apply relative overflow-hidden border-y border-neon/15 bg-[#090b0b]; }
+    .led-ticker::after {
+        content: "";
+        @apply pointer-events-none absolute inset-0;
+        background: radial-gradient(circle, transparent 1.15px, #090b0b 1.6px) 0 0 / 5px 5px;
+    }
+    .led-ticker::before {
+        content: "";
+        @apply pointer-events-none absolute inset-0 z-10;
+        background: linear-gradient(90deg, #090b0b, transparent 12%, transparent 88%, #090b0b);
+    }
+    .led-track { @apply flex w-max; animation: ticker 48s linear infinite; }
+    .led-item {
+        @apply flex items-center gap-10 whitespace-nowrap px-5 py-5 font-display font-bold uppercase leading-none tracking-[0.14em] sm:py-6;
+        font-size: clamp(1.75rem, 3.6vw, 3rem);
+        color: var(--color-neon);
+        text-shadow: 0 0 6px rgb(61 255 180 / .9), 0 0 18px rgb(61 255 180 / .55);
+    }
+    .led-item .is-amber { color: var(--color-amber-400); text-shadow: 0 0 6px rgb(255 185 56 / .9), 0 0 18px rgb(255 185 56 / .5); }
+    /* Separadores del letrero: alternan dorado y morado */
+    .led-item .is-gold { color: var(--color-gold); text-shadow: 0 0 6px rgb(242 196 90 / .9), 0 0 18px rgb(242 196 90 / .5); }
+    .led-item .is-violet { color: var(--color-violet); text-shadow: 0 0 6px rgb(178 124 255 / .9), 0 0 18px rgb(178 124 255 / .55); }
+
+    /* Números luminosos (contadores) */
+    .led-number {
+        @apply font-display font-bold leading-none tabular-nums text-white;
+        text-shadow: 0 0 8px rgb(61 255 180 / .65), 0 0 28px rgb(42 143 113 / .55), 0 0 46px rgb(178 124 255 / .3);
+    }
+}
+
+@keyframes neon-flicker {
+    0% { opacity: 0; } 10% { opacity: 1; } 14% { opacity: .2; } 22% { opacity: 1; } 30% { opacity: .35; }
+    40%, 100% { opacity: 1; }
+}
+@keyframes neon-hum { 0%, 100% { opacity: 1; } 47% { opacity: 1; } 48% { opacity: .55; } 49% { opacity: 1; } 51% { opacity: .7; } 52% { opacity: 1; } }
+@keyframes frame-spin { to { --angle: 360deg; } }
+@keyframes led-run { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes ticker { to { transform: translateX(-50%); } }

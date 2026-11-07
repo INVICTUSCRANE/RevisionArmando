@@ -1,0 +1,105 @@
+/*
+ * Fondo vivo de las secciones oscuras (el mismo del login): cuadrícula fija, barrido de luz,
+ * puntos de neón en los cruces y chispas que suben (algunas doradas y moradas).
+ * Las capas las agrega features/ambient.js dentro de cualquier `[data-ambient]`.
+ * La cuadrícula NO se mueve: es la capa más grande y moverla hacía que el scroll se trabara;
+ * lo que se anima (barrido, puntos y chispas) solo cambia transform/opacity.
+ */
+[data-ambient] { overflow: hidden; pointer-events: none; }
+[data-ambient]:not(.is-playing) * { animation-play-state: paused !important; }
+
+/* Cuadrícula que se desvanece hacia los bordes */
+.grid-floor {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgb(255 255 255 / .055) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(255 255 255 / .055) 1px, transparent 1px),
+        linear-gradient(rgb(63 166 132 / .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(63 166 132 / .08) 1px, transparent 1px);
+    background-size: 48px 48px, 48px 48px, 192px 192px, 192px 192px;
+    mask-image: radial-gradient(ellipse 85% 75% at var(--grid-x, 40%) var(--grid-y, 40%), #000 30%, transparent 100%);
+}
+[data-ambient~="light"] .grid-floor {
+    background-image:
+        linear-gradient(rgb(0 0 0 / .05) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(0 0 0 / .05) 1px, transparent 1px),
+        linear-gradient(rgb(33 128 102 / .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(33 128 102 / .08) 1px, transparent 1px);
+}
+
+/* Aura morada fija en una esquina: da profundidad sin competir con el verde */
+.ambient-aura {
+    position: absolute;
+    right: -10%;
+    bottom: -30%;
+    width: 60%;
+    height: 90%;
+    background: radial-gradient(closest-side, rgb(178 124 255 / .13), rgb(108 63 212 / .05) 55%, transparent);
+}
+[data-ambient~="light"] .ambient-aura { background: radial-gradient(closest-side, rgb(178 124 255 / .12), transparent); }
+
+/* Variante clara: manchas de luz verde que flotan lento (solo transform) y chispas en verde marca */
+.ambient-blob {
+    position: absolute;
+    width: 46vmax;
+    height: 46vmax;
+    left: -12vmax;
+    top: -18vmax;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(61 255 180 / .22), rgb(42 143 113 / .08) 55%, transparent);
+    animation: blob-drift 18s ease-in-out infinite alternate;
+}
+.ambient-blob.is-b { left: auto; right: -14vmax; top: auto; bottom: -22vmax; animation-duration: 22s; animation-direction: alternate-reverse; }
+@keyframes blob-drift { to { transform: translate(18vmax, 10vmax) scale(1.15); } }
+[data-ambient~="light"] .grid-scan { background: linear-gradient(180deg, transparent, rgb(42 143 113 / .04) 42%, rgb(42 143 113 / .1) 50%, transparent 58%); }
+[data-ambient~="light"] .grid-dot { background: var(--color-brand-500); box-shadow: 0 0 6px rgb(42 143 113 / .8), 0 0 14px rgb(61 255 180 / .5); }
+[data-ambient~="light"] .ambient-spark { background: var(--color-brand-500); box-shadow: 0 0 6px rgb(42 143 113 / .9); }
+
+/* Haz de luz que barre la cuadrícula de arriba abajo (solo se mueve con transform: no repinta) */
+.grid-scan {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 45%;
+    background: linear-gradient(180deg, transparent, rgb(61 255 180 / .05) 42%, rgb(61 255 180 / .14) 50%, transparent 58%);
+    animation: grid-scan 7s ease-in-out infinite;
+}
+@keyframes grid-scan { from { transform: translateY(-100%); } to { transform: translateY(225%); } }
+
+/* Puntos que se encienden en los cruces de la cuadrícula (solo cambia la opacidad) */
+.grid-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 1px;
+    background: var(--color-neon);
+    box-shadow: 0 0 6px var(--color-neon), 0 0 16px rgb(61 255 180 / .6);
+    opacity: .12;
+    animation: grid-dot var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes grid-dot { 50% { opacity: 1; } }
+
+/* Partículas que suben desde el piso */
+.ambient-spark {
+    position: absolute;
+    bottom: -10px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-neon);
+    box-shadow: 0 0 6px var(--color-neon);
+    opacity: 0;
+    animation: ambient-spark var(--dur, 9s) linear var(--delay, 0s) infinite;
+}
+@keyframes ambient-spark { 10% { opacity: .9; } 80% { opacity: .5; } 100% { opacity: 0; transform: translate(var(--drift, 30px), calc(var(--rise, 600px) * -1)); } }
+
+/* Acentos: algunos puntos morados y chispas doradas o moradas (también en la variante clara) */
+[data-ambient] .grid-dot.is-violet { background: var(--color-violet); box-shadow: 0 0 6px var(--color-violet), 0 0 16px rgb(178 124 255 / .55); }
+[data-ambient] .ambient-spark.is-gold { background: var(--color-gold); box-shadow: 0 0 6px var(--color-gold); }
+[data-ambient] .ambient-spark.is-violet { background: var(--color-violet); box-shadow: 0 0 6px var(--color-violet); }
+
+@media (prefers-reduced-motion: reduce) {
+    [data-ambient] .grid-scan, [data-ambient] .ambient-spark { display: none; }
+    .ambient-blob { animation: none; }
+}

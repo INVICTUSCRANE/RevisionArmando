@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mi cuenta | Industrias Invictus Crane</title>
+    <meta name="description" content="Crea tu cuenta o inicia sesión para comprar accesorios.">
+    <meta name="theme-color" content="#141515">
+    <link rel="icon" href="../assets/img/logo-invictus.png">
+    <link rel="stylesheet" href="../dist/css/app.css">
+    <script src="../dist/js/app.js" defer></script>
+</head>
+
+<body data-page="cuenta" data-root="..">
+    <main>
+        <section class="page-hero text-center">
+            <div class="page-hero-shade"></div>
+            <div data-ambient data-sparks="8" class="absolute inset-0 -z-10"></div>
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <p class="eyebrow-led animate-fade-up mx-auto w-fit">Tienda en línea</p>
+                <h1 class="animate-fade-up [animation-delay:100ms]">Mi <span class="neon-word">cuenta</span></h1>
+            </div>
+        </section>
+
+        <section class="relative z-10 -mt-12 pb-24">
+            <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+                <div class="neon-frame is-soft rounded-3xl bg-white p-8 shadow-2xl shadow-ink-900/10 ring-1 ring-ink-100 sm:p-12" data-reveal="zoom">
+                    <div id="authForms">
+                        <div class="relative grid grid-cols-2 rounded-2xl bg-ink-100 p-1" role="tablist">
+                            <span id="authTabIndicator" class="absolute inset-y-1 left-1 w-[calc(50%-.25rem)] rounded-xl bg-white shadow-md transition-transform duration-500 ease-out"></span>
+                            <button type="button" role="tab" class="relative z-10 py-3 font-display text-lg font-semibold uppercase text-ink-700 aria-selected:text-brand-700" data-auth-tab="register" aria-controls="registerForm">Crear cuenta</button>
+                            <button type="button" role="tab" class="relative z-10 py-3 font-display text-lg font-semibold uppercase text-ink-700 aria-selected:text-brand-700" data-auth-tab="login" aria-controls="loginForm">Iniciar sesión</button>
+                        </div>
+                        <form id="registerForm" class="mt-8 flex flex-col gap-5 animate-fade-up">
+                            <div class="grid gap-5 sm:grid-cols-2">
+                                <label class="field"><span>Nombre</span><input name="nombre" type="text" autocomplete="given-name" required></label>
+                                <label class="field"><span>Apellidos</span><input name="apellidos" type="text" autocomplete="family-name" required></label>
+                            </div>
+                            <label class="field"><span>Correo electrónico</span><input name="correo" type="email" autocomplete="email" required></label>
+                            <label class="field"><span>Número de teléfono</span><input name="telefono" type="tel" autocomplete="tel" required></label>
+                            <label class="field"><span>Contraseña (mínimo 8 caracteres)</span><input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+                            <button class="btn btn-primary" type="submit">Crear cuenta</button>
+                        </form>
+                        <form id="loginForm" class="mt-8 flex flex-col gap-5 animate-fade-up" hidden>
+                            <label class="field"><span>Correo electrónico</span><input name="correo" type="email" autocomplete="email" required></label>
+                            <label class="field"><span>Contraseña</span><input name="password" type="password" autocomplete="current-password" required></label>
+                            <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+                        </form>
+                    </div>
+                    <div id="authWelcome" class="flex flex-col items-center gap-3 text-center animate-fade-up" hidden>
+                        <span class="grid size-20 place-items-center rounded-full bg-brand-600 font-display text-3xl font-bold text-white">✓</span>
+                        <h3 class="font-display text-3xl font-bold uppercase text-ink-900" data-user-name></h3>
+                        <p class="text-ink-500" data-user-email></p>
+                        <div class="mt-4 flex flex-wrap justify-center gap-3">
+                            <a class="btn btn-primary" href="accesorios.html">Ir a accesorios</a>
+                            <button type="button" class="btn btn-ghost-dark" id="logoutBtn">Cerrar sesión</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

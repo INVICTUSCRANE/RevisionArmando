@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reparaciones | Industrias Invictus Crane</title>
+    <meta name="description" content="Solicita la reparación de tu grúa con Industrias Invictus Crane.">
+    <meta name="theme-color" content="#141515">
+    <link rel="icon" href="../assets/img/logo-invictus.png">
+    <link rel="stylesheet" href="../dist/css/app.css">
+    <script src="../dist/js/app.js" defer></script>
+</head>
+
+<body data-page="reparaciones" data-root="..">
+    <main>
+        <section class="page-hero">
+            <img data-photo="pagina-reparaciones" class="page-hero-photo">
+            <div class="page-hero-shade"></div>
+            <div data-ambient data-sparks="8" class="absolute inset-0 -z-10"></div>
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <p class="eyebrow-led animate-fade-up">Servicio</p>
+                <h1 class="animate-fade-up [animation-delay:100ms]">Solicitar <span class="neon-word">reparación</span></h1>
+                <p class="mt-5 max-w-2xl text-lg text-ink-300 animate-fade-up [animation-delay:200ms]">Cuéntanos qué necesitas. Completa el formulario y podrás enviar la solicitud por WhatsApp sin crear una cuenta.</p>
+            </div>
+        </section>
+
+        <section class="relative z-10 -mt-12 pb-20">
+            <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+                <div class="neon-frame is-soft rounded-3xl bg-white p-8 shadow-2xl shadow-ink-900/10 ring-1 ring-ink-100 sm:p-12" data-reveal="zoom">
+                    <form id="repairForm" class="flex flex-col gap-5">
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <label class="field"><span>Nombre</span><input name="nombre" type="text" autocomplete="given-name" required></label>
+                            <label class="field"><span>Apellido</span><input name="apellido" type="text" autocomplete="family-name" required></label>
+                        </div>
+                        <label class="field"><span>Correo electrónico</span><input name="correo" type="email" autocomplete="email" required></label>
+                        <label class="field"><span>Mensaje</span><textarea name="mensaje" rows="5" required placeholder="Describe la reparación que necesitas..."></textarea></label>
+                        <button class="btn btn-primary" type="submit">Enviar solicitud por WhatsApp</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ubicación: el mapa y los botones se generan desde src/js/core/location.js -->
+        <section class="relative isolate overflow-hidden bg-white pb-24 pt-8">
+            <div data-ambient="light" data-dots="10" data-sparks="6" class="absolute inset-0 -z-10"></div>
+            <!-- La cuadrícula aparece poco a poco bajo el formulario, sin un corte -->
+            <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-white to-transparent"></div>
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
+                    <div>
+                        <p class="eyebrow-led is-dark">Ubicación</p>
+                        <h2 class="section-title mt-4">Lleva tu grúa a nuestro taller</h2>
+                    </div>
+                    <p class="max-w-md text-lg text-ink-600">Aquí recibimos los equipos para diagnóstico y reparación. Escríbenos antes para darte cita.</p>
+                </div>
+                <div data-location-map class="mt-10"></div> 
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

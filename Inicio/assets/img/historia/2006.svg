@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"><style>
+.blink{animation:b 1s steps(2,jump-none) infinite}@keyframes b{to{opacity:.15}}
+.spark{animation:s .8s ease-out infinite;transform-box:fill-box;transform-origin:center}@keyframes s{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(1.6)}}
+.float{animation:f 4s ease-in-out infinite}@keyframes f{50%{transform:translateY(-10px)}}
+.dash{stroke-dasharray:10 10;animation:d 1.2s linear infinite}@keyframes d{to{stroke-dashoffset:-40}}
+.spin{animation:r 6s linear infinite;transform-box:fill-box;transform-origin:center}@keyframes r{to{transform:rotate(360deg)}}
+</style>
+<defs><radialGradient id="bg" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#1f3a33"/><stop offset="1" stop-color="#141515"/></radialGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#3fa684" stop-opacity=".35"/><stop offset="1" stop-color="#3fa684" stop-opacity="0"/></radialGradient>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#fff" stroke-opacity=".04"/></pattern></defs>
+<rect width="800" height="500" fill="url(#bg)"/><rect width="800" height="500" fill="url(#grid)"/>
+<ellipse cx="400" cy="300" rx="320" ry="180" fill="url(#glow)"/>
+<rect y="420" width="800" height="80" fill="#0e1010"/><path d="M0 420H800" stroke="#218066" stroke-opacity=".6" stroke-width="3"/>
+<path d="M170 420V230L400 140L630 230V420Z" fill="#253130"/><path d="M150 236L400 128L650 236" stroke="#3fa684" stroke-width="10" fill="none"/>
+<rect x="250" y="270" width="300" height="150" fill="#0f1414"/><g stroke="#2f3b39" stroke-width="4"><path d="M250 270H550"/><path d="M250 288H550"/><path d="M250 306H550"/></g>
+<rect x="320" y="170" width="160" height="40" rx="6" fill="#ffb938"/><text x="400" y="198" text-anchor="middle" font-family="Arial Narrow,Arial" font-weight="700" font-size="24" fill="#141515">TALLER</text>
+<g transform="translate(270 420)">
+<rect x="0" y="-70" width="250" height="16" rx="3" fill="#3c4141"/><rect x="0" y="-62" width="250" height="6" fill="#ffb938"/>
+<rect x="10" y="-54" width="330" height="14" rx="3" fill="#232525"/>
+<path d="M255 -40V-118Q255 -128 265 -128H310L345 -92Q355 -88 355 -76V-40Z" fill="#2a8f71"/>
+<path d="M268 -118H306L330 -94H268Z" fill="#a8dccb"/>
+<rect class="blink" x="276" y="-136" width="28" height="8" rx="3" fill="#ffb938"/>
+
+<g fill="#0d0e0e"><circle cx="60" cy="-20" r="20"/><circle cx="120" cy="-20" r="20"/><circle cx="300" cy="-20" r="20"/></g>
+<g fill="#7d8686"><circle cx="60" cy="-20" r="9"/><circle cx="120" cy="-20" r="9"/><circle cx="300" cy="-20" r="9"/></g></g>
+<g class="float"><path d="M610 300l40-40a22 22 0 1 1 18 18l-40 40z" fill="#c9d1d1"/><circle cx="672" cy="262" r="9" fill="#253130"/></g></svg>

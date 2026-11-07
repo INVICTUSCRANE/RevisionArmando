@@ -1,0 +1,76 @@
+/*
+ * Línea de ensamble animada (features/scenes/assembly-line.js mueve las piezas en cada cuadro).
+ * Sus animaciones CSS solo corren con `.is-playing`, que se activa cuando la escena está en pantalla.
+ */
+[data-scene] { display: block; }
+[data-scene]:not(.is-playing) * { animation-play-state: paused; }
+
+.assembly-scene { display: block; width: 100%; height: 100%; overflow: visible; }
+.assembly-scene .fx-far { fill: none; stroke: rgb(255 255 255 / .16); stroke-width: 1.5; stroke-linejoin: round; }
+.assembly-scene .fx-far .fx-amber { fill: rgb(255 185 56 / .35); stroke: rgb(255 185 56 / .5); }
+.assembly-scene .fx-far .fx-amber-line { stroke: rgb(255 185 56 / .45); stroke-width: 4; }
+.assembly-scene .fx-sign { fill: rgb(255 255 255 / .38); stroke: none; font: 600 12px var(--font-display); letter-spacing: 3px; }
+.assembly-scene .fx-sign.is-neon { fill: var(--color-neon); text-anchor: middle; filter: drop-shadow(0 0 4px rgb(61 255 180 / .8)); }
+
+/* Etiquetas de cada estación */
+.assembly-scene .fx-chip { fill: rgb(20 21 21 / .85); stroke: rgb(61 255 180 / .45); stroke-width: 1.2; }
+.assembly-scene .fx-chip-text { fill: var(--color-neon); font: 700 12px var(--font-display); letter-spacing: 2px; text-anchor: middle; }
+.assembly-scene .fx-chip-line { stroke: rgb(61 255 180 / .35); stroke-width: 1.2; stroke-dasharray: 2 3; }
+
+.assembly-scene .fx-belt { fill: #151717; }
+.assembly-scene .fx-belt-edge { stroke: var(--color-neon); stroke-width: 2; filter: drop-shadow(0 0 4px var(--color-neon)) drop-shadow(0 0 10px rgb(61 255 180 / .5)); }
+.assembly-scene .fx-belt-marks { stroke: rgb(255 185 56 / .55); stroke-width: 3; stroke-dasharray: 14 18; }
+.assembly-scene .fx-roller circle { fill: #0d0e0e; stroke: rgb(255 255 255 / .3); stroke-width: 1.5; }
+.assembly-scene .fx-roller path { stroke: rgb(61 255 180 / .6); stroke-width: 2; }
+.assembly-scene .fx-floor { fill: rgb(0 0 0 / .35); }
+
+.assembly-scene .fx-steel { fill: none; stroke: rgb(255 255 255 / .6); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.assembly-scene .fx-steel.is-thick { stroke-width: 5; }
+.assembly-scene .fx-steel-thin { fill: none; stroke: rgb(255 255 255 / .35); stroke-width: 3; stroke-linejoin: round; }
+.assembly-scene .fx-body { fill: rgb(255 255 255 / .05); stroke: rgb(255 255 255 / .45); stroke-width: 1.5; }
+.assembly-scene .fx-line { fill: none; stroke: rgb(255 255 255 / .3); stroke-width: 1.5; }
+.assembly-scene .fx-cable { fill: rgb(255 255 255 / .5); }
+.assembly-scene .fx-part { fill: none; stroke: var(--color-neon); stroke-width: 2.5; stroke-linejoin: round; filter: drop-shadow(0 0 4px var(--color-neon)); }
+
+/* Grúas en la banda: plano punteado que se completa estación por estación */
+.assembly-scene .t-variant { display: none; }
+.assembly-scene .t-variant.is-shown { display: inline; }
+.assembly-scene .fx-blueprint { fill: none; stroke: rgb(61 255 180 / .45); stroke-width: 1.3; stroke-dasharray: 4 4; transition: opacity .4s; }
+.assembly-scene .fx-chassis { fill: #1b1d1d; stroke: rgb(255 255 255 / .4); stroke-width: 1.5; }
+.assembly-scene .fx-tire { fill: #0d0e0e; stroke: rgb(255 255 255 / .45); stroke-width: 1.5; }
+.assembly-scene .fx-rim { fill: none; stroke: var(--color-neon); stroke-width: 1.5; }
+.assembly-scene .fx-spoke { stroke: rgb(255 255 255 / .55); stroke-width: 2; }
+.assembly-scene .fx-cab { fill: rgb(42 143 113 / .3); stroke: rgb(255 255 255 / .6); stroke-width: 1.5; transition: fill .4s, stroke .4s, filter .4s; }
+.assembly-scene .fx-glass { fill: rgb(61 255 180 / .14); stroke: rgb(61 255 180 / .45); stroke-width: 1.2; }
+.assembly-scene .fx-stripes { fill: url(#fxHazard); opacity: .85; }
+.assembly-scene .fx-brand { fill: #fff; font: 700 10px var(--font-display); letter-spacing: .5px; }
+.assembly-scene .fx-lightbar { fill: #ffb938; animation: fx-flash .9s steps(1) infinite; }
+.assembly-scene .fx-headlight { fill: #fff3c4; filter: drop-shadow(0 0 5px #fff3c4); }
+
+.assembly-scene .fx-truck .p-cab, .assembly-scene .fx-truck .p-bed, .assembly-scene .fx-truck .p-final {
+    opacity: 0; transform: translateY(-26px); transform-box: fill-box;
+    transition: opacity .35s ease-out, transform .45s var(--ease-spring);
+}
+.assembly-scene .fx-truck.s1 .p-cab, .assembly-scene .fx-truck.s2 .p-bed, .assembly-scene .fx-truck.s3 .p-final { opacity: 1; transform: none; }
+.assembly-scene .fx-truck.s3 .fx-cab { fill: rgb(42 143 113 / .65); stroke: var(--color-neon); filter: drop-shadow(0 0 6px rgb(61 255 180 / .7)); }
+.assembly-scene .fx-truck.s3 .fx-blueprint { opacity: 0; }
+.assembly-scene .fx-truck .p-badge { opacity: 0; }
+.assembly-scene .fx-badge { fill: rgb(20 21 21 / .88); stroke: var(--color-neon); stroke-width: 1.5; filter: drop-shadow(0 0 6px rgb(61 255 180 / .7)); }
+.assembly-scene .fx-badge-text { fill: var(--color-neon); font: 700 11px var(--font-display); letter-spacing: 1px; text-anchor: middle; }
+
+/* Robot de soldadura */
+.assembly-scene .fx-arm { fill: none; stroke: rgb(255 255 255 / .75); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+.assembly-scene .fx-joint { fill: #1b1d1d; stroke: var(--color-neon); stroke-width: 2; }
+/* La escena se redibuja en cada cuadro: los elementos que se mueven llevan a lo mucho un resplandor */
+.assembly-scene .fx-torch { fill: #fff; filter: drop-shadow(0 0 6px var(--color-neon)); animation: fx-torch .12s steps(2) infinite; }
+.assembly-scene .fx-spark { fill: #ffd27a; }
+
+/* Arco de control de calidad y arco de entrega */
+.assembly-scene .fx-qc-light { fill: var(--color-neon); filter: drop-shadow(0 0 5px var(--color-neon)); }
+.assembly-scene .fx-scan { stroke: var(--color-neon); stroke-width: 2; filter: drop-shadow(0 0 4px var(--color-neon)) drop-shadow(0 0 12px rgb(61 255 180 / .6)); animation: fx-scan 1.4s ease-in-out infinite; }
+.assembly-scene .fx-led-strip { stroke: var(--color-neon); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 6 8; filter: drop-shadow(0 0 4px var(--color-neon)); animation: fx-led 1.2s linear infinite; }
+
+@keyframes fx-torch { 50% { opacity: .55; } }
+@keyframes fx-scan { 50% { opacity: .35; } }
+@keyframes fx-led { to { stroke-dashoffset: -28; } }
+@keyframes fx-flash { 50% { opacity: .15; } }

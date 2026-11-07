@@ -1,0 +1,508 @@
+/*
+ * Hojas del catálogo con estilo de pantalla LED: fondo oscuro de hoja técnica (cuadrícula fina y gruesa,
+ * marcas de registro, regla, folio y marca de agua), acentos de neón con detalles dorados y morados,
+ * íconos luminosos y pestañas de sección en el canto. Las medidas usan `em` sobre una base en `cqw`
+ * (ancho de la hoja), así el contenido escala con el libro.
+ */
+@layer components {
+    .book .page { @apply select-none overflow-hidden; container-type: inline-size; }
+
+    /* ---------- Hoja ---------- */
+    .page-sheet, .cover-sheet { @apply absolute inset-0 flex flex-col; }
+    .page-sheet {
+        font-size: 2.55cqw;
+        padding: 6% 7% 5%;
+        color: #d7e2de;
+        background:
+            radial-gradient(ellipse at 50% -10%, rgb(42 143 113 / .3), transparent 60%),
+            radial-gradient(ellipse 70% 45% at var(--aura-x, 100%) 105%, rgb(108 63 212 / .16), transparent 70%),
+            radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgb(0 0 0 / .35)),
+            linear-gradient(rgb(61 255 180 / .07) 1px, transparent 1px) -1px -1px / 10em 10em,
+            linear-gradient(90deg, rgb(61 255 180 / .07) 1px, transparent 1px) -1px -1px / 10em 10em,
+            linear-gradient(rgb(61 255 180 / .04) 1px, transparent 1px) 0 0 / 2em 2em,
+            linear-gradient(90deg, rgb(61 255 180 / .04) 1px, transparent 1px) 0 0 / 2em 2em,
+            linear-gradient(180deg, #161c1b, #0e1211);
+    }
+    .page--left .page-sheet { --aura-x: 0%; } /* el aura morada queda siempre en la esquina exterior */
+
+    /* Detalles de hoja técnica (quedan detrás del contenido y no compiten con él) */
+    .page-decor { @apply pointer-events-none absolute inset-0; }
+    /* Marcas de registro en las cuatro esquinas y una mira dorada junto al canto */
+    .page-marks {
+        @apply absolute inset-[2.6%];
+        --c: rgb(61 255 180 / .38);
+        background:
+            linear-gradient(var(--c), var(--c)) top left / 1.6em 1px no-repeat, linear-gradient(var(--c), var(--c)) top left / 1px 1.6em no-repeat,
+            linear-gradient(var(--c), var(--c)) top right / 1.6em 1px no-repeat, linear-gradient(var(--c), var(--c)) top right / 1px 1.6em no-repeat,
+            linear-gradient(var(--c), var(--c)) bottom left / 1.6em 1px no-repeat, linear-gradient(var(--c), var(--c)) bottom left / 1px 1.6em no-repeat,
+            linear-gradient(var(--c), var(--c)) bottom right / 1.6em 1px no-repeat, linear-gradient(var(--c), var(--c)) bottom right / 1px 1.6em no-repeat;
+    }
+    .page-marks::after {
+        content: ""; @apply absolute top-[2.4em] size-[1.1em] rounded-full border;
+        border-color: rgb(242 196 90 / .55);
+        background: linear-gradient(rgb(242 196 90 / .7), rgb(242 196 90 / .7)) center / 1px 160% no-repeat, linear-gradient(90deg, rgb(242 196 90 / .7), rgb(242 196 90 / .7)) center / 160% 1px no-repeat;
+    }
+    .page--right .page-marks::after { @apply right-[.2em]; }
+    .page--left .page-marks::after { @apply left-[.2em]; }
+    /* Regla al pie: marcas finas cada media unidad y gruesas cada 2.5 */
+    .page-ruler {
+        @apply absolute inset-x-[12%] bottom-[1.1%] h-[.7em] opacity-60;
+        background:
+            repeating-linear-gradient(90deg, rgb(61 255 180 / .45) 0 1px, transparent 1px 2.5em) bottom / 100% 100% no-repeat,
+            repeating-linear-gradient(90deg, rgb(61 255 180 / .28) 0 1px, transparent 1px .5em) bottom / 100% 45% no-repeat;
+    }
+    /* Folio vertical junto al lomo */
+    .page-serial {
+        @apply absolute top-1/2 whitespace-nowrap font-display font-semibold uppercase not-italic;
+        writing-mode: vertical-rl; font-size: .62em; letter-spacing: .32em; color: rgb(255 255 255 / .22);
+    }
+    .page--right .page-serial { left: 2.4%; transform: translateY(-50%) rotate(180deg); }
+    .page--left .page-serial { right: 2.4%; transform: translateY(-50%); }
+
+    /* Pestañas de sección en el canto (como el índice de uñero de un catálogo impreso) */
+    .page-tab {
+        @apply absolute z-[3] flex flex-col items-center gap-[.35em] overflow-hidden border py-[.6em] font-display font-bold uppercase transition duration-300;
+        top: calc(13% + var(--slot) * (70% / var(--count)));
+        height: calc(70% / var(--count) - .5em);
+        width: 1.75em;
+        border-color: rgb(61 255 180 / .2);
+        background: linear-gradient(180deg, rgb(61 255 180 / .07), rgb(61 255 180 / .02));
+        color: rgb(255 255 255 / .38);
+    }
+    .page--right .page-tab { @apply right-0 rounded-l-[.55em] border-r-0; }
+    .page--left .page-tab { @apply left-0 rounded-r-[.55em] border-l-0; }
+    .page-tab b { @apply leading-none tabular-nums; font-size: .78em; color: rgb(242 196 90 / .6); }
+    .page-tab span { writing-mode: vertical-rl; @apply min-h-0 overflow-hidden whitespace-nowrap; font-size: .62em; letter-spacing: .18em; }
+    .page--left .page-tab span { transform: rotate(180deg); }
+    .page-tab:hover { @apply text-white; border-color: rgb(61 255 180 / .5); background: rgb(61 255 180 / .12); }
+    .page-tab.is-active {
+        @apply text-white;
+        border-color: rgb(61 255 180 / .7);
+        background: linear-gradient(180deg, var(--color-brand-500), var(--color-brand-700));
+        box-shadow: 0 0 1em -.1em rgb(61 255 180 / .65), inset 0 0 .6em rgb(61 255 180 / .35);
+    }
+    .page-tab.is-active b { color: var(--color-gold); text-shadow: 0 0 .5em rgb(242 196 90 / .8); }
+    /* Sombra del lomo (canal central) y filo de luz en el borde exterior */
+    .page-sheet::after { content: ""; @apply pointer-events-none absolute inset-0; }
+    .page--left .page-sheet::after { background: linear-gradient(to left, rgb(0 0 0 / .6), rgb(0 0 0 / .15) 4%, transparent 12%), linear-gradient(to right, rgb(61 255 180 / .35), transparent 1.5%); }
+    .page--right .page-sheet::after { background: linear-gradient(to right, rgb(0 0 0 / .6), rgb(0 0 0 / .15) 4%, transparent 12%), linear-gradient(to left, rgb(61 255 180 / .35), transparent 1.5%); }
+
+    .page-blueprint { @apply pointer-events-none absolute -bottom-[2%] -right-[8%] w-[85%] opacity-[.07]; color: var(--color-neon); }
+    .page--left .page-blueprint { @apply -left-[8%] right-auto -scale-x-100; }
+
+    .page-head { @apply relative flex items-center justify-between pb-[.5em]; }
+    .page-head::after {
+        content: ""; @apply absolute inset-x-0 bottom-0 h-[2px] rounded-full;
+        background: linear-gradient(90deg, rgb(61 255 180 / .75), rgb(61 255 180 / .5) 70%, rgb(178 124 255 / .65));
+        box-shadow: 0 0 .6em rgb(61 255 180 / .45);
+    }
+    .page--left .page-head::after { transform: scaleX(-1); }
+    .page-head-logo { width: 9em; @apply rounded-[.3em]; }
+    .page-head span { @apply font-display font-semibold uppercase tracking-[.25em]; color: var(--color-neon); font-size: .85em; text-shadow: 0 0 .5em rgb(61 255 180 / .6); }
+    .page--left .page-head { @apply flex-row-reverse; }
+
+    .page-content { @apply relative flex min-h-0 flex-1 flex-col pt-[1.2em]; }
+
+    .page-foot { @apply relative mt-[.6em] flex items-center gap-[.8em] font-display text-white/50; }
+    .page--left .page-foot { @apply flex-row-reverse; }
+    .page-foot-rule { @apply h-px flex-1 bg-white/15; }
+    .page-foot-num { @apply font-bold tabular-nums; color: var(--color-gold); font-size: 1.3em; text-shadow: 0 0 .5em rgb(242 196 90 / .6); }
+    .page-foot-index { @apply rounded-full border border-white/25 px-[.8em] py-[.15em] uppercase tracking-widest text-white/70 transition hover:border-neon hover:bg-neon/10 hover:text-white; font-size: .8em; }
+
+    .page-title { @apply font-display font-bold uppercase leading-none text-white; font-size: 3em; }
+    .page-title::after { content: ""; @apply mt-[.25em] block h-[.12em] w-[1.6em] rounded-full; background: linear-gradient(90deg, var(--color-neon) 70%, var(--color-gold)); box-shadow: 0 0 .4em rgb(61 255 180 / .8); }
+    .page-hint { @apply mt-[.6em] italic text-white/50; font-size: .95em; }
+    .page-prose { @apply mt-[1em] flex flex-col gap-[.8em] leading-snug text-white/85; font-size: 1.15em; }
+    .page-prose b { @apply text-white; }
+
+    /* ---------- Botones ---------- */
+    .page-actions { @apply mt-auto grid grid-cols-2 gap-[.45em] pt-[.8em]; }
+    .page-actions > :first-child, .page-actions > .is-link:nth-child(2):last-child { @apply col-span-2; }
+    .page-prose .page-actions { @apply mt-[1em] grid-cols-1; }
+    .page-prose .page-actions > :first-child { @apply col-span-1; }
+    .page-btn {
+        @apply relative inline-flex items-center justify-center gap-[.4em] overflow-hidden rounded-[.5em] border-2 border-white/30 px-[.6em] py-[.45em] text-center font-display font-semibold uppercase tracking-wide text-white transition duration-200 hover:-translate-y-px hover:border-neon hover:bg-neon/10;
+        font-size: 1em;
+    }
+    .page-btn.is-primary { @apply border-brand-500 bg-brand-600 text-white hover:border-neon hover:bg-brand-500; box-shadow: 0 0 1.2em -.2em rgb(61 255 180 / .45); }
+    .page-btn.is-primary:hover { box-shadow: 0 0 1.6em rgb(61 255 180 / .6); }
+    .page-btn.is-link { @apply border-transparent hover:bg-transparent hover:underline; color: var(--color-neon); }
+    .page-btn-icon { @apply block size-[1.2em] shrink-0; }
+
+    /* ---------- Ficha de producto ---------- */
+    /* La foto es lo único que se encoge cuando la hoja es baja; el texto y los botones nunca se encimen al pie. */
+    .product-layout { @apply flex min-h-0 flex-1 flex-col; }
+    .product-layout > * { @apply shrink-0; }
+    .product-layout > .product-photo { @apply flex min-h-[6em] shrink flex-col; }
+    .product-photo { @apply relative mx-auto w-[86%]; }
+    .product-photo-frame { @apply block aspect-[16/9] min-h-0 shrink overflow-hidden rounded-[.6em] ring-1 ring-neon/40; box-shadow: 0 0 1.4em -.2em rgb(61 255 180 / .45), 0 .8em 1.6em -.6em rgb(0 0 0 / .8); }
+    .page--accessory .product-photo-frame { @apply aspect-[16/10]; }
+    .product-photo-frame img { @apply size-full object-cover; }
+    /* Esquinas de visor y barrido de luz al aparecer la hoja */
+    .product-photo::before {
+        content: ""; @apply pointer-events-none absolute -inset-[.45em] z-10;
+        --c: var(--color-neon);
+        background:
+            linear-gradient(var(--c), var(--c)) top left / 1.4em 2px no-repeat, linear-gradient(var(--c), var(--c)) top left / 2px 1.4em no-repeat,
+            linear-gradient(var(--c), var(--c)) top right / 1.4em 2px no-repeat, linear-gradient(var(--c), var(--c)) top right / 2px 1.4em no-repeat;
+        filter: drop-shadow(0 0 .3em var(--color-neon));
+        height: calc(100% - 1.1em);
+    }
+    .product-photo-frame::after {
+        content: ""; @apply pointer-events-none absolute inset-0;
+        background: linear-gradient(100deg, transparent 35%, rgb(61 255 180 / .35) 50%, transparent 65%);
+        transform: translateX(-120%);
+    }
+    .page.is-visible .product-photo-frame::after { animation: photo-scan 1.4s ease-out .3s both; }
+    .product-photo figcaption { @apply pt-[.4em] text-center italic text-white/45; font-size: .8em; }
+    .price-tag {
+        @apply absolute -right-[.8em] -top-[1.2em] z-20 grid size-[6.2em] rotate-12 place-content-center rounded-full border-2 bg-ink-950/90 text-center font-display font-bold leading-none;
+        font-size: 1.15em;
+        border-color: var(--color-gold);
+        color: var(--color-gold);
+        text-shadow: 0 0 .4em rgb(242 196 90 / .8);
+        box-shadow: 0 0 1em rgb(242 196 90 / .5), inset 0 0 .8em rgb(242 196 90 / .28);
+    }
+    .price-tag small { @apply block font-semibold uppercase text-white/80; font-size: .42em; letter-spacing: .05em; text-shadow: none; }
+    .product-chip { @apply mt-[.9em] inline-flex items-center gap-[.6em] self-start rounded-full border py-[.15em] pl-[.2em] pr-[.8em] font-display uppercase tracking-[.2em]; border-color: rgb(61 255 180 / .5); color: var(--color-neon); font-size: .8em; }
+    .product-chip b { @apply grid place-items-center rounded-full px-[.55em] py-[.1em] tracking-normal text-ink-950; background: var(--color-gold); box-shadow: 0 0 .5em rgb(242 196 90 / .6); }
+    .product-name { @apply mt-[.15em] font-display font-bold uppercase leading-[.9] text-white; font-size: 3.6em; text-shadow: 0 0 .5em rgb(61 255 180 / .25); }
+    .product-name.is-long { font-size: 2.6em; }
+    .product-desc { @apply mt-[.3em] leading-snug text-white/70; font-size: 1.1em; }
+
+    .spec-list { @apply mt-[.6em] flex flex-col gap-[.35em]; }
+    .spec-row { @apply grid grid-cols-[1fr_auto] items-baseline gap-x-[1em] border-b border-dashed border-white/15 pb-[.3em]; }
+    .spec-row span { @apply text-white/60; font-size: .95em; }
+    .spec-row b { @apply font-display text-white; font-size: 1.2em; }
+    /* Especificación de grúa con su ícono LED, que se dibuja al aparecer la hoja */
+    .spec-row.has-icon { @apply grid-cols-[auto_1fr_auto] items-center; }
+    .spec-row-icon {
+        @apply grid size-[2.1em] place-items-center rounded-full border p-[.38em];
+        border-color: rgb(61 255 180 / .5); color: var(--color-neon);
+        box-shadow: 0 0 .6em rgb(61 255 180 / .35), inset 0 0 .5em rgb(61 255 180 / .2);
+    }
+    .spec-row-icon svg > * { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .page.is-visible .spec-row-icon svg > * { animation: blueprint-draw 1.2s var(--ease-out-expo) calc(var(--i, 0) * 150ms + .35s) forwards; }
+
+    /* ---------- Índice: una tarjeta por sección ---------- */
+    .index-cats { @apply mt-[1.1em] flex flex-col gap-[1.1em]; }
+    .index-cat {
+        @apply relative overflow-hidden rounded-[.7em] border;
+        border-color: rgb(61 255 180 / .22);
+        background: linear-gradient(160deg, rgb(61 255 180 / .07), rgb(6 9 8 / .55) 45%), rgb(6 9 8 / .45);
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), 0 .6em 1.2em -.8em rgb(0 0 0 / .9);
+        opacity: 0; transform: translateY(1em);
+        transition: opacity .55s, transform .6s var(--ease-out-expo);
+        transition-delay: calc(var(--i) * 140ms + 250ms);
+    }
+    .page--index.is-visible .index-cat { opacity: 1; transform: none; }
+    /* Filo de color a la izquierda: verde que termina en morado */
+    .index-cat::before { content: ""; @apply absolute inset-y-0 left-0 w-[.22em]; background: linear-gradient(180deg, var(--color-neon), rgb(178 124 255 / .8)); box-shadow: 0 0 .6em rgb(61 255 180 / .5); }
+    .index-cat-head {
+        @apply flex w-full items-center gap-[.75em] border-b px-[.9em] py-[.65em] text-left transition hover:bg-neon/10;
+        border-color: rgb(61 255 180 / .16);
+    }
+    .index-cat-num { @apply font-display font-bold leading-none tabular-nums; font-size: 2.1em; color: transparent; -webkit-text-stroke: 1.5px var(--color-gold); filter: drop-shadow(0 0 .25em rgb(242 196 90 / .45)); }
+    .index-cat-icon {
+        @apply grid size-[2.3em] shrink-0 place-items-center rounded-full border p-[.42em];
+        border-color: rgb(61 255 180 / .5); color: var(--color-neon); background: rgb(61 255 180 / .06);
+        box-shadow: 0 0 .7em rgb(61 255 180 / .35), inset 0 0 .5em rgb(61 255 180 / .2);
+    }
+    .index-cat-name { @apply flex min-w-0 flex-1 flex-col; }
+    .index-cat-name b { @apply font-display font-bold uppercase leading-none tracking-[.08em] text-white; font-size: 1.45em; }
+    .index-cat-name small { @apply mt-[.3em] font-semibold uppercase tracking-[.12em] text-white/50; font-size: .72em; }
+    .index-cat-page { @apply rounded-full border px-[.55em] py-[.1em] font-display font-bold tabular-nums; font-size: 1.05em; border-color: rgb(242 196 90 / .5); color: var(--color-gold); }
+    .index-cat-items { @apply grid grid-cols-2 gap-[.4em] p-[.6em] pl-[.85em]; }
+    .index-item {
+        @apply flex min-w-0 items-center justify-between gap-[.5em] rounded-[.45em] border px-[.65em] py-[.42em] text-left transition duration-200 hover:-translate-y-px hover:bg-neon/10;
+        border-color: rgb(255 255 255 / .08); background: rgb(255 255 255 / .03);
+    }
+    .index-item:hover { border-color: rgb(61 255 180 / .55); box-shadow: 0 0 .8em -.2em rgb(61 255 180 / .5); }
+    .index-item span { @apply flex min-w-0 flex-col; }
+    .index-item b { @apply font-display font-bold uppercase leading-tight text-white; font-size: 1.12em; }
+    .index-item small { @apply truncate text-white/55; font-size: .78em; }
+    .index-item i { @apply font-display font-bold not-italic tabular-nums; color: var(--color-gold); font-size: 1.05em; }
+    /* Con dos secciones por hoja hay aire de sobra: tarjetas más grandes */
+    .index-cats.is-roomy { @apply mt-[1.4em] gap-[1.5em]; }
+    .is-roomy .index-cat-head { @apply py-[.85em]; }
+    .is-roomy .index-cat-items { @apply gap-[.5em] p-[.75em] pl-[1em]; }
+    .is-roomy .index-item { @apply px-[.8em] py-[.62em]; }
+    .is-roomy .index-item b { font-size: 1.3em; }
+    .is-roomy .index-item small { font-size: .86em; }
+    .is-roomy .index-item i { font-size: 1.2em; }
+
+    /* ---------- Portadilla de sección ---------- */
+    .divider { @apply relative flex min-h-0 flex-1 flex-col; }
+    .divider-num {
+        @apply pointer-events-none absolute -right-[.05em] -top-[.35em] font-display font-bold leading-none;
+        font-size: 8em; color: transparent; -webkit-text-stroke: 2px rgb(242 196 90 / .32);
+    }
+    .divider.has-thumbs .divider-num { display: none; } /* ahí el título es largo y ya lo numeran el ícono y la pestaña */
+    .divider-head { @apply relative flex items-center gap-[.9em]; }
+    .divider-emblem {
+        @apply grid size-[4.2em] shrink-0 place-items-center rounded-[1em] border p-[.8em];
+        border-color: rgb(61 255 180 / .55); color: var(--color-neon); background: rgb(61 255 180 / .06);
+        box-shadow: 0 0 1.2em rgb(61 255 180 / .35), inset 0 0 .8em rgb(61 255 180 / .2);
+    }
+    .divider-kicker { @apply flex items-center gap-[.6em] font-display font-semibold uppercase tracking-[.3em]; color: var(--color-neon); font-size: .85em; text-shadow: 0 0 .5em rgb(61 255 180 / .6); }
+    .divider-kicker b { @apply rounded-full px-[.5em] py-[.05em] tracking-normal text-ink-950; background: var(--color-gold); text-shadow: none; box-shadow: 0 0 .5em rgb(242 196 90 / .6); }
+    .divider-title { @apply mt-[.1em] font-display font-bold uppercase leading-[.9] text-white; font-size: 3.9em; text-shadow: 0 0 .4em rgb(61 255 180 / .3); }
+    .divider.has-thumbs .divider-title { font-size: 3.2em; }
+    .divider-tagline { @apply relative mt-[.45em] max-w-[86%] leading-snug text-white/75; font-size: 1.08em; }
+    .divider-photo { @apply relative mx-auto mt-[.8em] w-full; }
+    .divider-photo .product-photo-frame { @apply aspect-[16/6.4]; }
+    .divider-photo::before {
+        content: ""; @apply pointer-events-none absolute -inset-[.4em] z-10;
+        --c: var(--color-neon);
+        background:
+            linear-gradient(var(--c), var(--c)) top left / 1.4em 2px no-repeat, linear-gradient(var(--c), var(--c)) top left / 2px 1.4em no-repeat,
+            linear-gradient(var(--c), var(--c)) bottom right / 1.4em 2px no-repeat, linear-gradient(var(--c), var(--c)) bottom right / 2px 1.4em no-repeat;
+        filter: drop-shadow(0 0 .3em var(--color-neon));
+    }
+    .divider-facts { @apply relative mt-[.85em] grid grid-cols-3 gap-[.45em]; }
+    .divider-facts li {
+        @apply flex items-center gap-[.5em] rounded-[.55em] border px-[.5em] py-[.45em];
+        border-color: rgb(61 255 180 / .2); background: rgb(6 9 8 / .5);
+    }
+    .divider-facts .spec-row-icon { @apply size-[1.9em] shrink-0 p-[.34em]; }
+    .divider-facts span { @apply flex min-w-0 flex-col; }
+    .divider-facts small { @apply uppercase leading-tight tracking-[.06em] text-white/50; font-size: .64em; }
+    .divider-facts b { @apply font-display font-bold leading-tight text-white; font-size: 1em; }
+    .divider-facts .spec-row-icon svg > * { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .page.is-visible .divider-facts .spec-row-icon svg > * { animation: blueprint-draw 1.2s var(--ease-out-expo) calc(var(--i, 0) * 150ms + .35s) forwards; }
+    .divider-list-title { @apply mt-[.9em] flex items-center gap-[.6em] font-display font-semibold uppercase tracking-[.25em] text-white/60; font-size: .8em; }
+    .divider-list-title::after { content: ""; @apply order-1 h-px flex-1; background: linear-gradient(90deg, rgb(61 255 180 / .4), rgb(178 124 255 / .35), transparent); }
+    .divider-link { @apply order-2 tracking-[.12em] hover:underline; color: var(--color-neon); }
+    .divider-list { @apply mt-[.45em] grid grid-cols-2 gap-[.4em]; }
+    .divider-item {
+        @apply flex items-baseline gap-[.5em] rounded-[.45em] border px-[.7em] py-[.45em] text-left font-display transition hover:-translate-y-px hover:bg-neon/10;
+        border-color: rgb(255 255 255 / .1); background: rgb(255 255 255 / .03);
+    }
+    .divider-item:hover { border-color: rgb(61 255 180 / .55); }
+    .divider-item b { @apply font-bold uppercase text-white; font-size: 1.15em; }
+    .divider-item small { @apply flex-1 truncate font-sans text-white/55; font-size: .8em; }
+    .divider-item i { @apply font-bold not-italic tabular-nums; color: var(--color-gold); }
+    .divider-thumb {
+        @apply flex flex-col overflow-hidden rounded-[.55em] border text-left transition hover:-translate-y-px;
+        border-color: rgb(255 255 255 / .1); background: rgb(255 255 255 / .03);
+    }
+    .divider-thumb:hover { border-color: rgb(61 255 180 / .55); box-shadow: 0 0 .9em -.2em rgb(61 255 180 / .5); }
+    .divider-thumb-photo { @apply block aspect-[16/7] w-full; background-size: 40% auto, 1.2em 1.2em, 1.2em 1.2em, 100% 100%; }
+    .divider-thumb-copy { @apply flex min-w-0 flex-col px-[.6em] pt-[.4em]; }
+    .divider-thumb-copy b { @apply truncate font-display font-bold uppercase text-white; font-size: 1.02em; }
+    .divider-thumb-copy small { @apply text-white/55; font-size: .78em; }
+    .divider-thumb > i { @apply self-end px-[.6em] pb-[.3em] font-display font-bold not-italic tabular-nums; color: var(--color-gold); font-size: .95em; margin-top: -1.3em; }
+    /* Entrada en cascada al abrir la hoja */
+    .page--divider .divider > * { opacity: 0; transform: translateY(.8em); transition: opacity .5s, transform .6s var(--ease-out-expo); }
+    .page--divider.is-visible .divider > * { opacity: 1; transform: none; }
+    .page--divider.is-visible .divider > :nth-child(3) { transition-delay: .08s; }
+    .page--divider.is-visible .divider > :nth-child(4) { transition-delay: .16s; }
+    .page--divider.is-visible .divider > :nth-child(5) { transition-delay: .24s; }
+    .page--divider.is-visible .divider > :nth-child(n+6) { transition-delay: .32s; }
+    .page--divider.is-visible .divider > .divider-num { transition-delay: 0s; }
+
+    .steps-list { @apply flex list-none flex-col gap-[.9em]; counter-reset: step; }
+    .steps-list li { @apply relative pl-[2.6em]; counter-increment: step; }
+    .steps-list li::before {
+        content: counter(step);
+        @apply absolute left-0 top-0 grid size-[1.9em] place-items-center rounded-full border-2 font-display font-bold;
+        border-color: var(--color-neon); color: var(--color-neon); box-shadow: 0 0 .6em rgb(61 255 180 / .5);
+    }
+
+    .notes-lines { @apply mt-[1.5em] flex-1; background: repeating-linear-gradient(to bottom, transparent 0 2.2em, rgb(61 255 180 / .18) 2.2em calc(2.2em + 1px)); }
+
+    /* ---------- Tapas (portada: catalog/cover-art.js) ---------- */
+    /* Pasta de fibra de carbono: tejido diagonal, brillo verde al centro y reflejo arriba */
+    .cover-sheet {
+        @apply items-center justify-center gap-[1.2em] overflow-hidden p-[10%] text-center text-white;
+        font-size: 2.6cqw;
+        background:
+            radial-gradient(ellipse at 50% 34%, rgb(42 143 113 / .5), transparent 62%),
+            radial-gradient(ellipse 80% 40% at 50% 108%, rgb(108 63 212 / .3), transparent 70%),
+            linear-gradient(165deg, rgb(255 255 255 / .08), transparent 26%),
+            repeating-linear-gradient(45deg, rgb(255 255 255 / .03) 0 .28em, transparent .28em .56em),
+            repeating-linear-gradient(-45deg, rgb(0 0 0 / .45) 0 .28em, transparent .28em .56em),
+            linear-gradient(160deg, #1e2625, #0b0e0d 60%, #050707);
+    }
+    .cover-sheet::before {
+        content: ""; @apply pointer-events-none absolute inset-[4%] rounded-[.5em] border-2;
+        border-color: rgb(61 255 180 / .7);
+        box-shadow: 0 0 1.6em rgb(61 255 180 / .65), inset 0 0 1.6em rgb(61 255 180 / .3);
+        animation: cover-frame 4s ease-in-out infinite; /* solo opacidad: no repinta la tapa */
+    }
+    /* Reflejo que cruza la tapa */
+    .cover-sheet::after {
+        content: ""; @apply pointer-events-none absolute inset-0 z-[4];
+        background: linear-gradient(115deg, transparent 40%, rgb(255 255 255 / .1) 48%, rgb(61 255 180 / .14) 50%, transparent 58%);
+        transform: translateX(-100%);
+    }
+    .page.is-visible .cover-sheet::after { animation: cover-sheen 6s ease-in-out 1s infinite; }
+    .page--right .cover-sheet { box-shadow: inset 1.6em 0 1.8em -1em rgb(0 0 0 / .85), inset .25em 0 0 rgb(61 255 180 / .2); }
+    .page--left .cover-sheet { box-shadow: inset -1.6em 0 1.8em -1em rgb(0 0 0 / .85); }
+    .cover-sheet .page-blueprint { @apply opacity-[.09]; }
+
+    /* Costura punteada y esquineros metálicos con remache */
+    .cover-stitch { @apply pointer-events-none absolute inset-[2.2%] rounded-[.6em]; border: .13em dashed rgb(242 196 90 / .3); }
+    .cover-corner {
+        @apply pointer-events-none absolute z-[3] size-[3.6em];
+        background:
+            radial-gradient(circle at 30% 30%, #fff 0 .16em, #5d6865 .2em .32em, transparent .36em),
+            linear-gradient(135deg, #f4f8f7, #aab5b2 32%, #555e5b 50%, #cfd8d5 68%, #7d8986);
+        clip-path: polygon(0 0, 100% 0, 0 100%);
+    }
+    .cover-corner.is-tl { @apply left-0 top-0; }
+    .cover-corner.is-tr { @apply right-0 top-0 -scale-x-100; }
+    .cover-corner.is-bl { @apply bottom-0 left-0 -scale-y-100; }
+    .cover-corner.is-br { @apply bottom-0 right-0 -scale-100; }
+
+    .cover-logo { @apply relative w-[68%] rounded-[.4em]; filter: drop-shadow(0 .5em 1.2em rgb(0 0 0 / .7)) drop-shadow(0 0 1.2em rgb(61 255 180 / .3)); }
+    .cover-title { @apply relative font-display font-bold uppercase leading-[1.05] tracking-wide; font-size: 2.6em; text-shadow: 0 0 .5em rgb(61 255 180 / .45), 0 .1em .3em rgb(0 0 0 / .6); }
+    .cover-subtitle { @apply relative text-white/70; font-size: 1.2em; }
+    .cover-actions { @apply relative flex flex-col gap-[.6em]; }
+    .cover-open {
+        @apply relative z-[2] rounded-[.5em] border-2 border-neon/70 bg-brand-600 px-[1.4em] py-[.55em] font-display font-semibold uppercase tracking-wider text-white transition hover:bg-brand-500;
+        font-size: 1.3em;
+    }
+    /* Pulso de luz del botón: un anillo aparte que solo cambia su opacidad */
+    .cover-open::after {
+        content: ""; @apply pointer-events-none absolute -inset-[2px] rounded-[inherit] opacity-0;
+        box-shadow: 0 0 0 .4em rgb(61 255 180 / .18), 0 0 1.4em rgb(61 255 180 / .6);
+        animation: cover-pulse 2.4s ease-in-out infinite;
+    }
+    .cover-open.is-ghost { @apply border-white/40 bg-transparent hover:bg-white/10; }
+    .cover-open.is-ghost::after { content: none; }
+    /* Franja de seguridad hecha de LED que corre */
+    .cover-hazard {
+        @apply absolute inset-x-0 bottom-0 h-[4%] overflow-hidden;
+        box-shadow: 0 0 1.4em rgb(61 255 180 / .55);
+        opacity: .9;
+    }
+    /* Las franjas se desplazan con transform (una tira más ancha que se recorre un periodo) */
+    .cover-hazard::before {
+        content: ""; @apply absolute inset-y-0 -left-[3.4em] w-[calc(100%+3.4em)];
+        background: repeating-linear-gradient(-45deg, var(--color-neon) 0 1.2em, #070909 1.2em 2.4em) 0 0 / 3.4em 100%;
+    }
+    .page.is-visible .cover-hazard::before { animation: hazard-run 1.4s linear infinite; }
+
+    /* ----- Portada ----- */
+    .cover-front { @apply justify-between gap-[.6em]; padding: 7.5% 8% 10%; }
+    .cover-top {
+        @apply relative flex w-full items-center justify-between pb-[.45em] font-display font-semibold uppercase;
+        font-size: .78em; letter-spacing: .28em; color: rgb(255 255 255 / .6);
+        border-bottom: 1px solid rgb(61 255 180 / .35);
+    }
+    .cover-top span:last-child { color: var(--color-gold); text-shadow: 0 0 .5em rgb(242 196 90 / .6); }
+    .cover-front .cover-logo { @apply mt-[.2em] w-[56%]; }
+
+    /* Pantalla con el plano técnico luminoso */
+    .cover-art {
+        @apply relative w-full rounded-[.6em] px-[.7em] pb-[.2em] pt-[.6em];
+        background:
+            radial-gradient(ellipse at 50% 65%, rgb(61 255 180 / .13), transparent 70%),
+            radial-gradient(ellipse 45% 60% at 4% 0%, rgb(178 124 255 / .2), transparent 70%),
+            linear-gradient(rgb(61 255 180 / .07) 1px, transparent 1px) 0 0 / 1.2em 1.2em,
+            linear-gradient(90deg, rgb(61 255 180 / .07) 1px, transparent 1px) 0 0 / 1.2em 1.2em,
+            rgb(4 7 6 / .7);
+        box-shadow: inset 0 0 0 1px rgb(61 255 180 / .35), inset 0 0 1.4em rgb(0 0 0 / .85), 0 0 1.2em -.3em rgb(61 255 180 / .45);
+    }
+    .cover-illustration { @apply block w-full; color: var(--color-neon); filter: drop-shadow(0 0 .22em rgb(61 255 180 / .75)); }
+    .cover-illustration .is-thick { stroke-width: 3.4; }
+    .cover-illustration .ill-line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    :is(.page.is-visible, .is-revealed) .cover-illustration .ill-line { animation: blueprint-draw 2.4s var(--ease-out-expo) calc(var(--d, 0) * 1ms + 250ms) forwards; }
+    .cover-illustration .ill-dim { stroke: rgb(178 124 255 / .7); stroke-width: 1.2; stroke-dasharray: 3 3; opacity: 0; transition: opacity 1s 1.2s; }
+    :is(.page.is-visible, .is-revealed) .cover-illustration .ill-dim { opacity: 1; }
+    .cover-plot { @apply relative; }
+    .cover-plot .ill-label {
+        @apply pointer-events-none absolute whitespace-nowrap font-display font-bold leading-none;
+        font-size: .86em; letter-spacing: .32em; color: var(--color-neon); opacity: .75;
+        transform: translate(-50%, -88%); padding-left: .32em;
+        text-shadow: 0 0 .4em rgb(61 255 180 / .7);
+    }
+    /* Torreta y barra de luces ámbar que destellan */
+    .cover-illustration .ill-beacons circle { fill: var(--color-amber-400); filter: drop-shadow(0 0 2.5px var(--color-amber-400)); animation: cover-beacon 1.1s steps(1, end) infinite; }
+    .cover-illustration .ill-beacons circle:nth-child(even) { animation-delay: .55s; }
+    /* Gancho y cadena que se balancean, engranes que giran */
+    .cover-illustration .ill-swing { transform-box: view-box; transform-origin: 36px 24px; animation: cover-swing 3.4s ease-in-out infinite; }
+    .cover-illustration .ill-swing.is-chain { transform-origin: 170px 6px; animation-duration: 4.2s; }
+    .cover-illustration .ill-spin { transform-box: fill-box; transform-origin: center; animation: cover-spin 14s linear infinite; }
+    .cover-illustration .ill-spin.is-reverse { animation-direction: reverse; animation-duration: 10.5s; }
+    .cover-illustration .ill-target { fill: none; stroke: var(--color-gold); stroke-width: 1.2; stroke-dasharray: 3 3; transform-box: fill-box; transform-origin: center; animation: cover-spin 6s linear infinite; }
+    /* Haz que escanea el plano de arriba abajo */
+    .cover-scan { @apply pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]; }
+    .cover-scan::before {
+        content: ""; @apply absolute inset-0;
+        background: linear-gradient(180deg, transparent 55%, rgb(61 255 180 / .14) 92%, rgb(61 255 180 / .7) 99%, transparent 100%);
+        transform: translateY(-100%);
+        animation: cover-scan 4.6s ease-in-out 1.5s infinite;
+    }
+    /* Sello dorado con el texto girando alrededor del año */
+    .cover-seal {
+        @apply absolute z-[2] grid aspect-square w-[7.2em] place-items-center rounded-full;
+        right: -1.3em; top: -2.2em;
+        background:
+            radial-gradient(circle closest-side, #15100a 0 68%, transparent 69%),
+            conic-gradient(from 20deg, #8a6212, #ffd98a, #b8860b, #fff0c2, #a87a17, #ffd98a, #8a6212);
+        box-shadow: 0 0 1.1em rgb(255 185 56 / .45), 0 .4em .9em rgb(0 0 0 / .7);
+    }
+    .cover-seal-ring { @apply absolute inset-0; animation: cover-spin 24s linear infinite; }
+    .cover-seal-ring i {
+        @apply absolute left-1/2 top-[5%] w-[1em] -translate-x-1/2 text-center font-display font-bold not-italic leading-none;
+        height: 45%; transform-origin: 50% 100%; rotate: var(--r);
+        font-size: .6em; color: #1a1206;
+    }
+    .cover-seal b { @apply relative font-display font-bold leading-none; font-size: 1.85em; color: var(--color-amber-400); text-shadow: 0 0 .45em rgb(255 185 56 / .85); }
+
+    .cover-kicker {
+        @apply relative mt-[.3em] flex items-center gap-[.7em] font-display font-semibold uppercase;
+        font-size: .92em; letter-spacing: .4em; color: var(--color-neon); text-shadow: 0 0 .5em rgb(61 255 180 / .7);
+    }
+    .cover-kicker::before, .cover-kicker::after { content: ""; @apply h-px w-[2.2em]; background: var(--color-gold); box-shadow: 0 0 .4em rgb(242 196 90 / .8); }
+    /* Título cromado */
+    .cover-front .cover-title {
+        font-size: 2.55em; line-height: 1;
+        background: linear-gradient(180deg, #fff 0%, #e4ece9 44%, #8e9c98 54%, #f3f8f6 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;
+        filter: drop-shadow(0 0 .3em rgb(61 255 180 / .45)) drop-shadow(0 .1em .08em rgb(0 0 0 / .9));
+    }
+    .cover-tags { @apply relative flex flex-wrap justify-center gap-[.4em]; }
+    .cover-tags li {
+        @apply relative rounded-full border px-[.7em] py-[.12em] font-display font-semibold uppercase text-white/80;
+        font-size: .8em; letter-spacing: .12em; border-color: rgb(61 255 180 / .3); background: rgb(61 255 180 / .06);
+    }
+    /* Las etiquetas se encienden una tras otra (capa aparte que solo cambia su opacidad) */
+    .cover-tags li::after {
+        content: ""; @apply pointer-events-none absolute -inset-px rounded-[inherit] border opacity-0;
+        border-color: var(--color-neon); box-shadow: 0 0 .7em rgb(61 255 180 / .7), inset 0 0 .4em rgb(61 255 180 / .4);
+        animation: cover-tag 4s ease-in-out infinite;
+    }
+    .cover-tags li:nth-child(2)::after { animation-delay: 1s; }
+    .cover-tags li:nth-child(3)::after { animation-delay: 2s; }
+    .cover-tags li:nth-child(4)::after { animation-delay: 3s; }
+    .cover-tags li:nth-child(2)::after { border-color: var(--color-violet); box-shadow: 0 0 .7em rgb(178 124 255 / .75), inset 0 0 .4em rgb(178 124 255 / .4); }
+    .cover-tags li:nth-child(4)::after { border-color: var(--color-gold); box-shadow: 0 0 .7em rgb(242 196 90 / .7), inset 0 0 .4em rgb(242 196 90 / .35); }
+    /* Tres garantías con ícono, separadas por filos de luz */
+    .cover-features { @apply relative grid w-full grid-cols-3; }
+    .cover-features li {
+        @apply flex flex-col items-center gap-[.5em] px-[.5em] font-display font-semibold uppercase leading-[1.15] text-white/80;
+        font-size: .82em; letter-spacing: .12em;
+    }
+    .cover-features li + li { border-left: 1px solid; border-image: linear-gradient(180deg, transparent, rgb(178 124 255 / .5), rgb(61 255 180 / .3), transparent) 1; }
+    .cover-feature-icon {
+        @apply grid size-[3.3em] place-items-center rounded-full border p-[.7em];
+        border-color: rgb(61 255 180 / .45); color: var(--color-neon); background: rgb(61 255 180 / .06);
+        box-shadow: 0 0 .9em -.2em rgb(61 255 180 / .6), inset 0 0 .6em rgb(61 255 180 / .2);
+    }
+    .cover-feature-icon svg { @apply size-full; filter: drop-shadow(0 0 .2em rgb(61 255 180 / .8)); }
+    .cover-front .cover-open { font-size: 1.15em; }
+}
+
+@keyframes cover-pulse { 50% { opacity: 1; } }
+@keyframes cover-frame { 50% { opacity: .55; } }
+@keyframes cover-sheen { 0%, 60% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes hazard-run { to { transform: translateX(3.4em); } }
+@keyframes photo-scan { to { transform: translateX(120%); } }
+@keyframes cover-beacon { 50% { opacity: .15; } }
+@keyframes cover-swing { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(-4deg); } }
+@keyframes cover-spin { to { transform: rotate(360deg); } }
+@keyframes cover-scan { 0% { transform: translateY(-100%); } 55%, 100% { transform: translateY(100%); } }
+@keyframes cover-tag { 0%, 30%, 100% { opacity: 0; } 10%, 18% { opacity: 1; } }
