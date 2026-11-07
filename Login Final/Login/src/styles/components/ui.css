@@ -1,0 +1,144 @@
+/* Piezas del formulario: etiquetas, campos, botones, roles, código de 6 dígitos y avisos. */
+@layer components {
+    .label { @apply mb-2 block font-display text-sm font-semibold uppercase tracking-[0.14em] text-ink-700 dark:text-ink-300; }
+
+    .input-wrap { @apply relative flex items-center; }
+    .input-wrap > svg:first-child { @apply pointer-events-none absolute left-4 size-5 text-ink-400 transition-colors dark:text-ink-500; }
+    .input-wrap:focus-within > svg:first-child { @apply text-brand-500 dark:text-neon; }
+    .input {
+        @apply h-14 w-full rounded-xl border border-ink-200 bg-white pl-12 pr-4 text-base text-ink-900 transition duration-200
+            placeholder:text-ink-300 hover:border-ink-300 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15
+            dark:border-ink-700 dark:bg-ink-900 dark:text-white dark:placeholder:text-ink-600 dark:hover:border-ink-600
+            dark:focus:border-neon/70 dark:focus:ring-neon/10;
+    }
+    .input[aria-invalid="true"] { @apply border-red-400 ring-4 ring-red-400/15 dark:border-red-400; }
+    .icon-btn {
+        @apply absolute right-2 grid size-10 place-items-center rounded-lg text-ink-400 transition hover:bg-ink-100 hover:text-ink-700
+            dark:text-ink-500 dark:hover:bg-ink-800 dark:hover:text-ink-200;
+    }
+
+    .btn-primary {
+        @apply relative flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-brand-600 px-6
+            font-display text-xl font-semibold tracking-wide text-white shadow-lg shadow-brand-700/30 transition duration-300
+            hover:-translate-y-0.5 hover:bg-brand-500 hover:shadow-xl hover:shadow-brand-500/35 active:translate-y-0
+            disabled:pointer-events-none disabled:opacity-70;
+    }
+    /* Brillo que cruza el botón al pasar el cursor */
+    .btn-primary::after {
+        content: "";
+        @apply pointer-events-none absolute inset-y-0 -left-full w-1/2 -skew-x-12 bg-white/25 transition-[left] duration-700 ease-out;
+    }
+    .btn-primary:hover::after { left: 150%; }
+    .btn-link { @apply font-semibold text-royal-600 underline-offset-4 transition hover:text-royal-500 hover:underline dark:text-royal-300 dark:hover:text-royal-200; }
+    .btn-back {
+        @apply mb-6 inline-flex items-center gap-1.5 rounded-lg py-1 pr-2 text-sm font-semibold text-ink-500 transition
+            hover:-translate-x-0.5 hover:text-brand-600 dark:text-ink-400 dark:hover:text-neon;
+    }
+
+    /* Tarjetas de rol (radio) */
+    .role {
+        @apply relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-2 py-4
+            text-center font-display text-base font-semibold text-ink-800 transition duration-200 select-none
+            hover:-translate-y-0.5 hover:border-brand-400 hover:shadow-md
+            has-[:checked]:border-brand-600 has-[:checked]:bg-brand-600 has-[:checked]:text-white has-[:checked]:shadow-lg has-[:checked]:shadow-brand-600/30
+            has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand-400/40
+            dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200 dark:hover:border-neon/50
+            dark:has-[:checked]:border-neon/80 dark:has-[:checked]:bg-brand-800/60 dark:has-[:checked]:text-white;
+    }
+    .role > svg { @apply size-7 text-brand-600 transition-transform duration-300 dark:text-neon; }
+    .role:has(:checked) > svg { @apply scale-110 text-white dark:text-neon; animation: var(--animate-pop); }
+
+    /* Selector Correo / Teléfono */
+    .segmented { @apply relative grid grid-cols-2 rounded-xl bg-ink-100 p-1 dark:bg-ink-900; }
+    .segmented label {
+        @apply relative z-10 flex cursor-pointer items-center justify-center gap-2 rounded-lg py-2.5 font-display text-base font-semibold
+            text-ink-500 transition select-none has-[:checked]:text-brand-700 dark:text-ink-400 dark:has-[:checked]:text-neon;
+    }
+    .segmented-thumb {
+        @apply absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-white shadow transition-transform duration-300 dark:bg-ink-800;
+        transition-timing-function: var(--ease-spring);
+    }
+    .segmented:has(label:nth-of-type(2) :checked) .segmented-thumb { transform: translateX(100%); }
+
+    /* Código de seguridad de 6 dígitos */
+    .otp {
+        @apply h-14 w-full min-w-0 rounded-xl border border-ink-200 bg-white text-center font-display text-2xl font-bold text-ink-900
+            transition duration-200 focus:-translate-y-0.5 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15
+            dark:border-ink-700 dark:bg-ink-900 dark:text-white dark:focus:border-neon/70 dark:focus:ring-neon/10;
+    }
+    .otp:not(:placeholder-shown) { @apply border-brand-500 dark:border-neon/60; animation: var(--animate-pop); }
+
+    .alert { @apply flex items-start gap-2 rounded-xl border px-4 py-3 text-sm leading-snug; }
+    .alert[data-tone="error"] { @apply border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300; }
+    .alert[data-tone="info"] { @apply border-brand-200 bg-brand-50 text-brand-800 dark:border-neon/25 dark:bg-neon/5 dark:text-brand-100; }
+
+    .toast {
+        @apply flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-2xl bg-ink-900/95 py-3 pl-3 pr-5 text-sm text-white
+            shadow-2xl shadow-black/30 backdrop-blur-md dark:bg-ink-800/95 dark:ring-1 dark:ring-neon/30;
+        animation: toast-in .45s var(--ease-spring) both;
+    }
+    .toast.is-leaving { animation: toast-out .3s ease-in both; }
+    .toast-icon { @apply grid size-7 shrink-0 place-items-center rounded-full bg-ink-700 text-sm font-bold; }
+    .toast[data-tone="success"] .toast-icon { @apply bg-brand-500; }
+    .toast[data-tone="error"] .toast-icon { @apply bg-red-500; }
+    .toast[data-tone="code"] .toast-icon { @apply bg-gold-400 text-ink-900; }
+
+    .spinner { @apply size-5 animate-spin rounded-full border-2 border-white/30 border-t-white; }
+
+    /* Vistas del formulario (inicio, recuperar, código, nueva contraseña, listo) */
+    .view { animation: var(--animate-swap); }
+    .view.is-back { animation-name: swap-back; }
+
+    /* Barra de seguridad de la contraseña */
+    .strength { @apply mt-3 grid grid-cols-4 gap-1.5; }
+    .strength span { @apply h-1.5 rounded-full bg-ink-200 transition-colors duration-300 dark:bg-ink-800; }
+    .strength[data-level="1"] span:nth-child(-n+1) { @apply bg-red-400; }
+    .strength[data-level="2"] span:nth-child(-n+2) { @apply bg-amber-400; }
+    .strength[data-level="3"] span:nth-child(-n+3) { @apply bg-brand-400; }
+    .strength[data-level="4"] span { @apply bg-brand-500 dark:bg-neon; }
+    .rule { @apply flex items-center gap-2 text-sm text-ink-500 transition-colors dark:text-ink-400; }
+    .rule::before { content: ""; @apply size-2 rounded-full bg-ink-300 transition dark:bg-ink-700; }
+    .rule[data-ok]::before { @apply scale-125 bg-brand-500 dark:bg-neon dark:shadow-[0_0_8px] dark:shadow-neon; }
+    .rule[data-ok] { @apply text-brand-700 dark:text-brand-200; }
+}
+
+/* Pantallas de computadora bajas: campos y botones un poco más compactos */
+@media (min-width: 64rem) and (max-height: 860px) {
+    .input, .otp, .btn-primary, #recoverForm select { height: 3rem; }
+    .role { padding-block: .7rem; }
+    .role > svg { width: 1.5rem; height: 1.5rem; }
+    .label { margin-bottom: .375rem; }
+    .view h2 { font-size: 1.85rem; }
+    .view > span.grid { width: 3rem; height: 3rem; margin-bottom: 1rem; }
+    .btn-back { margin-bottom: 1rem; }
+}
+
+/* Celebración: anillos que se expanden, partículas y el ícono al centro (ver core/burst.js) */
+.burst { position: relative; display: grid; place-items: center; width: 8rem; height: 8rem; margin-inline: auto; }
+.burst-ring { position: absolute; inset: 0; border-radius: 999px; border: 2px solid var(--color-brand-500); opacity: 0; animation: burst-ring 1.5s var(--ease-out-expo) var(--d, 0s) both; }
+.dark .burst-ring { border-color: var(--color-neon); box-shadow: 0 0 14px rgb(61 255 180 / .5), inset 0 0 14px rgb(61 255 180 / .3); }
+.burst-ring:nth-child(2) { border-color: var(--color-royal-400); box-shadow: none; }
+.burst-ring:nth-child(3) { border-color: var(--color-gold-400); box-shadow: none; }
+.burst-dot { position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px; border-radius: 2px; background: var(--c, var(--color-brand-500)); opacity: 0; animation: burst-dot 1s cubic-bezier(.2, .7, .3, 1) var(--d, .3s) both; }
+.dark .burst-dot { box-shadow: 0 0 8px var(--c, var(--color-neon)); }
+.burst-core { position: relative; display: grid; place-items: center; width: 5.5rem; height: 5.5rem; border-radius: 999px; background: var(--color-brand-50); color: var(--color-brand-600); animation: burst-core .7s var(--ease-spring) both; }
+.dark .burst-core { background: rgb(61 255 180 / .08); color: var(--color-neon); box-shadow: 0 0 0 1px rgb(61 255 180 / .5), 0 0 30px rgb(61 255 180 / .45); }
+@keyframes burst-ring { 0% { opacity: .9; transform: scale(.45); } 100% { opacity: 0; transform: scale(2); } }
+@keyframes burst-dot { 0% { opacity: 1; transform: rotate(var(--a)) translateX(12px) scale(1.2); } 100% { opacity: 0; transform: rotate(var(--a)) translateX(var(--r, 90px)) scale(.3); } }
+@keyframes burst-core { 0% { opacity: 0; transform: scale(.3) rotate(-20deg); } }
+
+/* Candado que se cierra al restablecer la contraseña */
+.lock-shackle { animation: lock-close .5s cubic-bezier(.5, 0, .3, 1.4) .45s both; }
+.lock-badge { transform-box: fill-box; transform-origin: center; animation: badge-pop .45s var(--ease-spring) 1s both; }
+@keyframes lock-close { from { transform: translateY(-5px); } }
+@keyframes badge-pop { from { opacity: 0; transform: scale(0); } }
+
+/* Aviso de sesión iniciada */
+.dialog-backdrop { animation: backdrop-in .3s ease-out both; }
+.dialog-panel { animation: dialog-in .55s var(--ease-spring) both; }
+@keyframes backdrop-in { from { opacity: 0; } }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(24px) scale(.92); } }
+
+@keyframes toast-in { from { opacity: 0; transform: translateY(24px) scale(.9); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(12px) scale(.95); } }
+@keyframes swap-back { from { opacity: 0; transform: translateX(-28px); filter: blur(4px); } }

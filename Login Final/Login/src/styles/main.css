@@ -1,0 +1,21 @@
+/*
+ * Hoja de estilos del portal. El diseño vive en clases de Tailwind dentro del HTML;
+ * aquí solo quedan el tema y los efectos que Tailwind no puede expresar con utilidades
+ * (la grúa animada, la cuadrícula, el neón). Compilar con `npm run build`.
+ */
+@import "tailwindcss" source(none);
+
+@source "../../index.html";
+@source "../js";
+
+/* Modo oscuro por clase en <html> (lo pone src/js/features/theme.js) */
+@custom-variant dark (&:where(.dark, .dark *));
+/* Computadoras con pantalla baja: se compacta la tarjeta para que todo quepa sin scroll */
+@custom-variant short (@media (min-width: 64rem) and (max-height: 860px));
+
+@import "./theme.css";
+@import "./fonts.css";
+@import "./base.css";
+@import "./components/ui.css";
+@import "./components/scene.css";
+@import "./components/neon.css";

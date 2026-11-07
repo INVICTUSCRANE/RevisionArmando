@@ -1,0 +1,148 @@
+/* Toques de neón: logo, titular, marco de la tarjeta, interruptor de tema y botón de sonido.
+ * Verde como protagonista; morado y dorado en los detalles. */
+
+/* Logo: la sombra es fija (se pinta una vez) y el halo que respira es una capa aparte
+ * que solo cambia de opacidad. */
+.logo-wrap { position: relative; isolation: isolate; align-self: flex-start; }
+.logo-wrap img { filter: drop-shadow(0 10px 24px rgb(0 0 0 / .45)); }
+.logo-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -30% -10%;
+    z-index: -1;
+    background: radial-gradient(closest-side, rgb(61 255 180 / .3), rgb(176 124 255 / .14) 60%, transparent);
+    opacity: 0;
+    animation: logo-halo 4s ease-in-out infinite;
+    will-change: opacity;
+}
+@keyframes logo-halo { 50% { opacity: 1; } }
+
+/* Palabra en neón: se enciende con parpadeo y luego zumba */
+.neon-word {
+    color: var(--color-neon);
+    text-shadow: 0 0 4px rgb(61 255 180 / .9), 0 0 14px rgb(61 255 180 / .6), 0 0 34px rgb(42 143 113 / .8);
+    animation: neon-on 1.4s ease-out .6s both, neon-hum 5s ease-in-out 2s infinite;
+}
+@keyframes neon-on {
+    0% { opacity: 0; } 10% { opacity: 1; } 14% { opacity: .2; } 22% { opacity: 1; } 30% { opacity: .35; }
+    40%, 100% { opacity: 1; }
+}
+@keyframes neon-hum { 0%, 100% { opacity: 1; } 47% { opacity: 1; } 48% { opacity: .55; } 49% { opacity: 1; } 51% { opacity: .7; } 52% { opacity: 1; } }
+/* Punto final dorado del titular */
+.gold-dot { color: var(--color-gold-400); text-shadow: 0 0 12px rgb(255 204 77 / .55); }
+
+.neon-rule { background: linear-gradient(90deg, var(--color-neon) 55%, var(--color-royal-400)); box-shadow: 0 0 6px var(--color-neon), 0 0 14px rgb(61 255 180 / .5); }
+
+/* Marco de la tarjeta: un destello (cola morada, cabeza verde, chispa dorada) recorre el borde.
+ * Se logra girando una capa con transform dentro de un anillo enmascarado: no se repinta nada
+ * en cada cuadro, a diferencia de animar el ángulo del degradado. */
+.neon-frame { position: relative; isolation: isolate; }
+.neon-border {
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1.5px;
+    overflow: hidden;
+    pointer-events: none;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: .6;
+}
+.dark .neon-border { opacity: 1; }
+.neon-border::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 220%;
+    aspect-ratio: 1;
+    background: conic-gradient(transparent 0deg 230deg, rgb(176 124 255 / .55) 285deg, var(--color-neon) 335deg, var(--color-gold-300) 352deg, transparent 360deg);
+    transform: translate(-50%, -50%);
+    animation: frame-spin 6s linear infinite;
+    will-change: transform;
+}
+@keyframes frame-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* Línea superior de la tarjeta con destello (verde → dorado → verde → morado) */
+.neon-topline { overflow: hidden; background: rgb(42 143 113 / .35); }
+.neon-topline::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 200%;
+    background: linear-gradient(90deg, var(--color-brand-500), var(--color-gold-400) 20%, var(--color-neon) 30%, var(--color-royal-400) 40%, var(--color-brand-500) 50%, var(--color-gold-400) 70%, var(--color-neon) 80%, var(--color-royal-400) 90%, var(--color-brand-500));
+    animation: topline 4s linear infinite;
+    will-change: transform;
+}
+.dark .neon-topline { box-shadow: 0 0 10px rgb(61 255 180 / .55); }
+@keyframes topline { to { transform: translateX(-50%); } }
+
+/* Tarjeta con halo verde (y un toque morado) en modo oscuro */
+.dark .card-glow { box-shadow: 0 0 0 1px rgb(61 255 180 / .08), 0 30px 80px -20px rgb(0 0 0 / .8), 0 0 60px -10px rgb(42 143 113 / .35), 40px 40px 90px -40px rgb(148 85 240 / .25); }
+
+/* Botón principal: halo neón al pasar el cursor en oscuro */
+.dark .btn-primary:hover { box-shadow: 0 0 0 1px rgb(61 255 180 / .5), 0 0 22px rgb(61 255 180 / .45), 0 0 50px rgb(42 143 113 / .4); }
+
+/* Interruptor de tema: perilla con aro verde; sol verde en claro, luna morada en oscuro */
+.theme-switch {
+    display: inline-flex;
+    width: 5.25rem;
+    height: 2.75rem;
+    padding: .25rem;
+    border-radius: 999px;
+    background: var(--color-ink-100);
+    box-shadow: inset 0 0 0 1px var(--color-ink-200), inset 0 2px 4px rgb(0 0 0 / .05);
+    cursor: pointer;
+}
+.dark .theme-switch { background: var(--color-ink-900); box-shadow: inset 0 0 0 1px rgb(61 255 180 / .35), 0 0 16px rgb(61 255 180 / .2); }
+.theme-knob {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-brand-600);
+    box-shadow: 0 2px 8px rgb(0 0 0 / .12), inset 0 0 0 1.5px var(--color-brand-500);
+    transition: transform .5s var(--ease-spring), background-color .3s;
+}
+.dark .theme-knob { transform: translateX(2.5rem) rotate(-360deg); background: var(--color-ink-800); color: var(--color-royal-300); box-shadow: 0 0 10px rgb(61 255 180 / .6), inset 0 0 0 1px rgb(61 255 180 / .7); }
+.theme-knob .moon { display: none; }
+.dark .theme-knob .sun { display: none; }
+.dark .theme-knob .moon { display: block; }
+
+/* Botón de sonido del panel de marca: bocina + ecualizador */
+.sound-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    height: 2.75rem;
+    padding: 0 .9rem 0 .8rem;
+    border-radius: 999px;
+    color: #fff;
+    background: rgb(255 255 255 / .06);
+    box-shadow: inset 0 0 0 1px rgb(176 124 255 / .45), 0 0 18px -4px rgb(176 124 255 / .45);
+    transition: background-color .2s, box-shadow .2s, transform .2s var(--ease-spring);
+    cursor: pointer;
+}
+.sound-toggle:hover { background: rgb(176 124 255 / .14); transform: translateY(-1px); }
+.sound-toggle:active { transform: scale(.96); }
+.sound-toggle svg { width: 1.25rem; height: 1.25rem; }
+.sound-toggle .icon-off { display: none; }
+.sound-toggle[aria-pressed="false"] { color: rgb(255 255 255 / .6); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18); }
+.sound-toggle[aria-pressed="false"] .icon-on { display: none; }
+.sound-toggle[aria-pressed="false"] .icon-off { display: block; }
+.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+.eq i { width: 3px; height: 100%; border-radius: 2px; background: var(--color-neon); transform-origin: bottom; animation: eq 1s ease-in-out infinite; }
+.eq i:nth-child(2) { background: var(--color-royal-400); animation-duration: .8s; animation-delay: -.3s; }
+.eq i:nth-child(3) { background: var(--color-gold-400); animation-duration: 1.2s; animation-delay: -.6s; }
+@keyframes eq { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+.sound-toggle[aria-pressed="false"] .eq i { animation: none; transform: scaleY(.2); background: rgb(255 255 255 / .35); }
+
+/* Palomita que se dibuja al terminar */
+.check-draw circle { stroke-dasharray: 160; stroke-dashoffset: 160; animation: draw .7s ease-out forwards; }
+.check-draw path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .4s ease-out .55s forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.dark .check-draw { filter: drop-shadow(0 0 8px rgb(61 255 180 / .7)); }

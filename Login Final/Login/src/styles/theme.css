@@ -1,0 +1,59 @@
+/* Tokens de marca (los mismos del sitio público) más el verde neón del portal. */
+@theme {
+    --font-sans: "Barlow", Calibri, Carlito, system-ui, sans-serif;
+    --font-display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+
+    --color-brand-50: #ecf8f3;
+    --color-brand-100: #d0eee2;
+    --color-brand-200: #a4dcc7;
+    --color-brand-300: #6fc3a6;
+    --color-brand-400: #3fa684;
+    --color-brand-500: #2a8f71;
+    --color-brand-600: #218066;
+    --color-brand-700: #1b6853;
+    --color-brand-800: #175343;
+    --color-brand-900: #123f33;
+
+    --color-ink-50: #f6f6f5;
+    --color-ink-100: #eaeaea;
+    --color-ink-200: #d6d4d4;
+    --color-ink-300: #b1acac;
+    --color-ink-400: #9a9494;
+    --color-ink-500: #857f7f;
+    --color-ink-600: #615c5c;
+    --color-ink-700: #454242;
+    --color-ink-800: #2a2a2a;
+    --color-ink-900: #1f1f1f;
+    --color-ink-950: #141515;
+
+    --color-amber-400: #ffb938;
+    --color-neon: #3dffb4;
+
+    /* Acentos: morado real y dorado. Se usan en detalles; el verde sigue siendo el protagonista. */
+    --color-royal-200: #e2d1ff;
+    --color-royal-300: #c9a8ff;
+    --color-royal-400: #b07cff;
+    --color-royal-500: #9455f0;
+    --color-royal-600: #7a3fd6;
+    --color-royal-700: #6230b0;
+
+    --color-gold-200: #ffe7a3;
+    --color-gold-300: #ffd76a;
+    --color-gold-400: #ffcc4d;
+    --color-gold-500: #f0b429;
+    --color-gold-600: #c98f12;
+    --color-gold-700: #9a6b06;
+
+    --ease-spring: cubic-bezier(.2, .9, .25, 1.12);
+    --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+
+    --animate-fade-up: fade-up .7s var(--ease-out-expo) both;
+    --animate-swap: swap .5s var(--ease-out-expo) both;
+    --animate-shake: shake .45s ease-in-out;
+    --animate-pop: pop .4s var(--ease-spring);
+
+    @keyframes fade-up { from { opacity: 0; transform: translateY(24px); } }
+    @keyframes swap { from { opacity: 0; transform: translateX(28px); filter: blur(4px); } }
+    @keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+    @keyframes pop { 40% { transform: scale(1.12); } }
+}

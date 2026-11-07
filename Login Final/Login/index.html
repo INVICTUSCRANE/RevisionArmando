@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal interno · Industrias Invictus Crane</title>
+    <meta name="description" content="Acceso al portal interno de Industrias Invictus Crane.">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#1f1f1f">
+    <!-- Aplica el tema antes de pintar para evitar el destello (misma lógica que src/js/features/theme.js) -->
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('invictus_portal_theme');
+                var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.toggle('dark', dark);
+            } catch (e) { /* almacenamiento bloqueado */ }
+        })();
+    </script>
+    <link rel="stylesheet" href="dist/css/portal.css">
+</head>
+<body class="min-h-dvh">
+<div class="relative flex min-h-dvh flex-col lg:h-dvh lg:flex-row lg:overflow-hidden">
+
+    <!-- ============ Panel de marca con la escena animada ============ -->
+    <aside id="scene" class="relative isolate flex flex-col overflow-hidden bg-ink-900 px-6 pt-8 text-white sm:px-10 lg:h-dvh lg:w-[52%] lg:px-16 lg:pt-[6vh]">
+        <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_0%_0%,rgb(42_143_113/.55),transparent_55%),radial-gradient(ellipse_at_100%_100%,rgb(148_85_240/.13),transparent_50%),radial-gradient(ellipse_at_100%_0%,rgb(255_204_77/.06),transparent_40%)]"></div>
+        <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+            <div class="grid-mask"><div class="grid-floor"></div></div>
+            <div class="grid-scan"></div>
+            <div id="gridDots" class="absolute inset-0"></div>
+            <div id="sparks" class="absolute inset-0"></div>
+        </div>
+
+        <!-- Botón para silenciar o activar los sonidos (también con la tecla M) -->
+        <button id="soundToggle" type="button" class="sound-toggle absolute right-6 top-8 z-10 animate-fade-up sm:right-10 lg:right-16 lg:top-[6vh]" aria-pressed="true" aria-label="Silenciar sonidos (M)" title="Silenciar sonidos (M)">
+            <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6M19.4 18.4a9 9 0 0 0 0-12.8"/></svg>
+            <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"/><path d="m22 9-6 6M16 9l6 6"/></svg>
+            <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+
+        <div class="logo-wrap animate-fade-up">
+            <img src="assets/img/logo-invictus.png" alt="Industrias Invictus Crane" class="block w-56 rounded-[10px] sm:w-72 lg:w-[min(26rem,42vh)]" width="1320" height="318">
+        </div>
+
+        <!-- Texto centrado a la altura del formulario -->
+        <div class="pt-10 lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:pt-0">
+            <p class="flex animate-fade-up items-center gap-4 font-display text-sm font-semibold uppercase tracking-[0.4em] text-white/85 [animation-delay:.15s] lg:text-[clamp(1rem,1.9vh,1.25rem)]">
+                <span class="neon-rule h-px w-12 lg:w-16"></span>Portal interno
+            </p>
+            <h1 class="mt-4 animate-fade-up font-sans text-[2.6rem] font-semibold leading-[1.02] tracking-tight [animation-delay:.25s] sm:text-6xl lg:mt-[2.5vh] lg:text-[clamp(3.6rem,8.6vh,6.75rem)]">
+                Fuerza que<br><span class="neon-word">levanta</span> tu negocio<span class="gold-dot">.</span>
+            </h1>
+            <p class="mt-5 max-w-2xl animate-fade-up text-base text-white/80 [animation-delay:.35s] sm:text-lg lg:mt-[3vh] lg:text-[clamp(1.15rem,2.5vh,1.6rem)] lg:leading-snug">
+                Administra el sitio web, los usuarios y todo el sistema de Industrias Invictus Crane desde un panel seguro y centralizado.
+            </p>
+        </div>
+
+        <!-- Inspector revisando la construcción de las grúas desde un holograma (src/js/features/inspection-scene.js) -->
+        <div class="relative -mx-6 mt-6 sm:-mx-10 lg:-mx-16 lg:mt-0">
+            <div id="inspectionScene" class="relative h-44 sm:h-60 lg:h-[34vh] short:h-[31vh]"></div>
+            <p class="absolute bottom-1 left-6 hidden text-xs text-white/50 sm:left-10 lg:left-16 lg:block">© <span data-year>2026</span> Industrias Invictus Crane</p>
+        </div>
+    </aside>
+
+    <!-- ============ Formulario ============ -->
+    <main class="relative flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-8 lg:h-dvh lg:overflow-y-auto lg:py-[4vh]">
+        <div class="pointer-events-none absolute inset-0 -z-0 bg-[linear-gradient(rgb(0_0_0/.03)_1px,transparent_1px),linear-gradient(90deg,rgb(0_0_0/.03)_1px,transparent_1px)] bg-[size:48px_48px] dark:bg-[linear-gradient(rgb(61_255_180/.035)_1px,transparent_1px),linear-gradient(90deg,rgb(61_255_180/.035)_1px,transparent_1px)]" aria-hidden="true"></div>
+
+
+        <div id="card" class="neon-frame card-glow relative z-[1] w-full max-w-[35rem] animate-fade-up rounded-3xl bg-white p-6 shadow-[0_30px_70px_-30px_rgb(0_0_0/.35)] [animation-delay:.1s] sm:p-11 short:p-8 dark:bg-ink-900/90">
+            <span class="neon-border" aria-hidden="true"></span>
+            <button id="themeToggle" type="button" class="theme-switch absolute right-5 top-5 z-20 sm:right-7 sm:top-7 short:top-5 short:right-6" role="switch" aria-checked="false" aria-label="Modo oscuro">
+                    <span class="theme-knob">
+                        <svg class="sun size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                        <svg class="moon size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>
+                    </span>
+                </button>
+            <div class="neon-topline absolute inset-x-10 top-0 h-[3px] rounded-full"></div>
+
+            <!-- 1 · Iniciar sesión -->
+            <section class="view" data-view="login">
+                <h2 class="font-sans text-3xl font-semibold tracking-tight text-ink-900 sm:text-[2.1rem] dark:text-white">Iniciar sesión</h2>
+                <p class="mt-2 text-ink-600 dark:text-ink-400">Selecciona tu rol e ingresa tus credenciales.</p>
+
+                <form id="loginForm" class="mt-7 space-y-5 short:mt-5 short:space-y-4" novalidate>
+                    <fieldset>
+                        <legend class="label">Rol</legend>
+                        <div class="grid grid-cols-3 gap-2.5 sm:gap-3">
+                            <label class="role">
+                                <input class="sr-only" type="radio" name="role" value="admin" checked>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.8l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.8v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                                Administrador
+                            </label>
+                            <label class="role">
+                                <input class="sr-only" type="radio" name="role" value="ventas">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+                                Ventas
+                            </label>
+                            <label class="role">
+                                <input class="sr-only" type="radio" name="role" value="marketing">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+                                Marketing
+                            </label>
+                        </div>
+                        <p id="roleHint" class="mt-3 text-sm text-ink-600 dark:text-ink-400" aria-live="polite">Control total del sistema</p>
+                    </fieldset>
+
+                    <div>
+                        <label class="label" for="loginEmail">Correo electrónico</label>
+                        <div class="input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <input id="loginEmail" class="input" type="email" name="email" placeholder="usuario@invictuscrane.com" autocomplete="username" inputmode="email" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="label" for="loginPassword">Contraseña</label>
+                        <div class="input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                            <input id="loginPassword" class="input pr-14" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+                            <button type="button" class="icon-btn" data-toggle-password="loginPassword" aria-label="Mostrar contraseña"></button>
+                        </div>
+                    </div>
+
+                    <p id="loginError" class="alert" data-tone="error" role="alert" hidden></p>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 text-[15px]">
+                        <label class="flex cursor-pointer items-center gap-2.5 text-ink-700 select-none dark:text-ink-300">
+                            <input type="checkbox" name="remember" class="size-5 cursor-pointer rounded accent-brand-600" checked>
+                            Recordarme
+                        </label>
+                        <button type="button" class="btn-link" data-go="recover">¿Olvidaste tu contraseña?</button>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <span data-label>Ingresar como Administrador</span>
+                    </button>
+                </form>
+
+                <!-- DEMOSTRACIÓN: quitar este bloque al conectar el servidor real -->
+                <details class="group mt-6 rounded-xl border border-dashed border-ink-200 px-4 py-3 text-sm text-ink-600 dark:border-ink-700 dark:text-ink-400">
+                    <summary class="cursor-pointer list-none font-semibold text-ink-700 marker:hidden dark:text-ink-300">
+                        <span class="mr-1 inline-block transition-transform group-open:rotate-90">›</span> Cuentas de prueba (demostración)
+                    </summary>
+                    <ul id="demoAccounts" class="mt-3 space-y-1.5"></ul>
+                </details>
+            </section>
+
+            <!-- 2 · Recuperar contraseña: elegir correo o teléfono -->
+            <section class="view" data-view="recover" hidden>
+                <button type="button" class="btn-back" data-go="login" data-back>
+                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Volver a iniciar sesión
+                </button>
+                <span class="mb-5 grid size-14 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-neon/10 dark:text-neon dark:shadow-[0_0_20px_-2px] dark:shadow-neon/50 dark:ring-1 dark:ring-neon/40">
+                    <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg>
+                </span>
+                <h2 class="font-sans text-3xl font-semibold tracking-tight text-ink-900 dark:text-white">Recuperar contraseña</h2>
+                <p class="mt-2 text-ink-600 dark:text-ink-400">Te enviaremos un código de seguridad de 6 dígitos para confirmar que eres tú.</p>
+
+                <form id="recoverForm" class="mt-7 space-y-5 short:mt-5 short:space-y-4" novalidate>
+                    <fieldset>
+                        <legend class="label">¿Dónde quieres recibir el código?</legend>
+                        <div class="segmented">
+                            <span class="segmented-thumb" aria-hidden="true"></span>
+                            <label>
+                                <input class="sr-only" type="radio" name="channel" value="email" checked>
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                Correo
+                            </label>
+                            <label>
+                                <input class="sr-only" type="radio" name="channel" value="sms">
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
+                                Teléfono
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <div data-channel="email">
+                        <label class="label" for="recoverEmail">Correo electrónico de tu cuenta</label>
+                        <div class="input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <input id="recoverEmail" class="input" type="email" name="email" placeholder="usuario@invictuscrane.com" autocomplete="email" inputmode="email">
+                        </div>
+                    </div>
+
+                    <div data-channel="sms" hidden>
+                        <label class="label" for="recoverPhone">Teléfono registrado</label>
+                        <div class="flex gap-2">
+                            <select name="country" aria-label="Lada del país" class="h-14 rounded-xl border border-ink-200 bg-white px-3 font-semibold text-ink-800 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200">
+                                <option value="+52">🇲🇽 +52</option>
+                                <option value="+1">🇺🇸 +1</option>
+                            </select>
+                            <div class="input-wrap flex-1">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
+                                <input id="recoverPhone" class="input" type="tel" name="phone" placeholder="81 1234 5678" autocomplete="tel-national" inputmode="tel" maxlength="14">
+                            </div>
+                        </div>
+                    </div>
+
+                    <p id="recoverError" class="alert" data-tone="error" role="alert" hidden></p>
+
+                    <button type="submit" class="btn-primary"><span data-label>Enviar código</span></button>
+                </form>
+            </section>
+
+            <!-- 3 · Escribir el código de seguridad -->
+            <section class="view" data-view="code" hidden>
+                <button type="button" class="btn-back" data-go="recover" data-back>
+                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Cambiar correo o teléfono
+                </button>
+                <span class="mb-5 grid size-14 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-neon/10 dark:text-neon dark:shadow-[0_0_20px_-2px] dark:shadow-neon/50 dark:ring-1 dark:ring-neon/40">
+                    <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.7 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                </span>
+                <h2 class="font-sans text-3xl font-semibold tracking-tight text-ink-900 dark:text-white">Código de seguridad</h2>
+                <p class="mt-2 text-ink-600 dark:text-ink-400">Escribe el código de 6 dígitos que enviamos a <strong id="codeTarget" class="font-semibold text-ink-900 dark:text-white"></strong>.</p>
+
+                <form id="codeForm" class="mt-7 space-y-5 short:mt-5 short:space-y-4" novalidate>
+                    <fieldset>
+                        <legend class="sr-only">Código de 6 dígitos</legend>
+                        <div id="otp" class="grid grid-cols-6 gap-2 sm:gap-3">
+                            <input class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="1" placeholder=" " aria-label="Dígito 1">
+                            <input class="otp" inputmode="numeric" maxlength="1" placeholder=" " aria-label="Dígito 2">
+                            <input class="otp" inputmode="numeric" maxlength="1" placeholder=" " aria-label="Dígito 3">
+                            <input class="otp" inputmode="numeric" maxlength="1" placeholder=" " aria-label="Dígito 4">
+                            <input class="otp" inputmode="numeric" maxlength="1" placeholder=" " aria-label="Dígito 5">
+                            <input class="otp" inputmode="numeric" maxlength="1" placeholder=" " aria-label="Dígito 6">
+                        </div>
+                    </fieldset>
+
+                    <p id="codeError" class="alert" data-tone="error" role="alert" hidden></p>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <span>El código vence en <strong id="codeExpiry" class="font-semibold text-ink-700 tabular-nums dark:text-ink-200">10:00</strong></span>
+                        <button id="resendBtn" type="button" class="btn-link disabled:cursor-default disabled:text-ink-400 disabled:no-underline dark:disabled:text-ink-500" disabled>Reenviar código</button>
+                    </div>
+
+                    <button type="submit" class="btn-primary"><span data-label>Verificar código</span></button>
+                </form>
+            </section>
+
+            <!-- 4 · Nueva contraseña -->
+            <section class="view" data-view="reset" hidden>
+                <span class="mb-5 grid size-14 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-neon/10 dark:text-neon dark:shadow-[0_0_20px_-2px] dark:shadow-neon/50 dark:ring-1 dark:ring-neon/40">
+                    <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1"/></svg>
+                </span>
+                <h2 class="font-sans text-3xl font-semibold tracking-tight text-ink-900 dark:text-white">Crea tu nueva contraseña</h2>
+                <p class="mt-2 text-ink-600 dark:text-ink-400">Código verificado. Elige una contraseña que no hayas usado antes.</p>
+
+                <form id="resetForm" class="mt-7 space-y-5 short:mt-5 short:space-y-4" novalidate>
+                    <div>
+                        <label class="label" for="newPassword">Nueva contraseña</label>
+                        <div class="input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                            <input id="newPassword" class="input pr-14" type="password" name="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required>
+                            <button type="button" class="icon-btn" data-toggle-password="newPassword" aria-label="Mostrar contraseña"></button>
+                        </div>
+                        <div id="strength" class="strength" data-level="0" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+                        <ul class="mt-3 grid gap-1.5 sm:grid-cols-2">
+                            <li class="rule" data-rule="length">8 caracteres o más</li>
+                            <li class="rule" data-rule="upper">Una mayúscula</li>
+                            <li class="rule" data-rule="number">Un número</li>
+                            <li class="rule" data-rule="symbol">Un símbolo</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <label class="label" for="confirmPassword">Confirmar contraseña</label>
+                        <div class="input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                            <input id="confirmPassword" class="input pr-14" type="password" name="confirm" autocomplete="new-password" placeholder="Repite la contraseña" required>
+                            <button type="button" class="icon-btn" data-toggle-password="confirmPassword" aria-label="Mostrar contraseña"></button>
+                        </div>
+                    </div>
+
+                    <p id="resetError" class="alert" data-tone="error" role="alert" hidden></p>
+
+                    <button type="submit" class="btn-primary"><span data-label>Guardar contraseña</span></button>
+                </form>
+            </section>
+
+            <!-- 5 · Listo -->
+            <section class="view text-center" data-view="done" hidden>
+                <div id="resetBurst" class="pt-6"></div>
+                <h2 class="mt-8 font-sans text-3xl font-semibold tracking-tight text-ink-900 animate-fade-up [animation-delay:.5s] dark:text-white">¡Contraseña restablecida!</h2>
+                <p class="mx-auto mt-2 max-w-sm text-ink-600 animate-fade-up [animation-delay:.6s] dark:text-ink-400">Tu contraseña se cambió correctamente. Ya puedes entrar al portal con ella.</p>
+                <button type="button" class="btn-primary mt-8 animate-fade-up [animation-delay:.7s]" data-go="login" data-back>Ir a iniciar sesión</button>
+            </section>
+        </div>
+
+        <p class="relative z-[1] mt-8 text-sm text-ink-500 lg:hidden dark:text-ink-500">© <span data-year>2026</span> Industrias Invictus Crane</p>
+    </main>
+</div>
+
+<!-- Aviso de sesión iniciada (por ahora no hay panel al que entrar) -->
+<div id="successDialog" class="dialog-backdrop fixed inset-0 z-40 grid place-items-center bg-ink-950/75 p-4" hidden>
+    <div class="dialog-panel neon-frame card-glow w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl dark:bg-ink-900" role="alertdialog" aria-modal="true" aria-labelledby="successTitle" aria-describedby="successText">
+        <span class="neon-border" aria-hidden="true"></span>
+        <div id="loginBurst"></div>
+        <h2 id="successTitle" class="mt-6 font-sans text-2xl font-semibold tracking-tight text-ink-900 dark:text-white">¡Sesión iniciada correctamente!</h2>
+        <p id="successText" class="mt-2 text-ink-600 dark:text-ink-400"></p>
+        <button id="successClose" type="button" class="btn-primary mt-7"><span data-label>Aceptar</span></button>
+    </div>
+</div>
+
+<div id="toastStack" class="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2" aria-live="polite"></div>
+
+<script src="dist/js/login.js"></script>
+</body>
+</html>
